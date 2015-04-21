@@ -41,7 +41,7 @@ export class PlaceholderBase implements MessagePartBase {
 
 export class NgExpr extends PlaceholderBase {
   // TODO: toLongFingerprint must calcuate this in a proper way.
-  toLongFingerprint(): string { return TYPENAME_NG_EXPR + this.text; }
+  toLongFingerprint(): string { return getStableTypeName(this) + this.text; }
 }
 
 // TagPairs, when serialized, will use a pair of placeholders to represent
