@@ -5,19 +5,6 @@
  * version is the current official type specification.
  */
 
-/* These fixed strings have to be stable and are intended to be
- * backwards/forwards compatible.  They are used in the computation of the
- * message fingerprint (for message id) and in the JSON serialization of our
- * messages to disk.  The actual classes that uses these typenames are free to
- * change their names or use inheritance/composition/whatever as long as they
- * eventually identify with one of these types.*/
-export type StableTypeName = string;
-export var /*const*/ TYPENAME_TEXT_PART:StableTypeName = "TextPart";
-export var /*const*/ TYPENAME_TAG_PAIR_BEGIN_REF:StableTypeName = "TagPairBegin";
-export var /*const*/ TYPENAME_TAG_PAIR_END_REF:StableTypeName = "TagPairEnd";
-export var /*const*/ TYPENAME_HTML_TAG_PAIR:StableTypeName = "HtmlTagPair";
-export var /*const*/ TYPENAME_NG_EXPR:StableTypeName = "NgExpr";
-
 export type MessagePart = TextPart|Placeholder|TagPair;
 
 export interface MessagePartBaseConstructor<T extends MessagePartBase> {
@@ -140,7 +127,20 @@ export function getStableTypeName(part: MessagePartBase): string {
 }
 
 
-(function() {
+/* These fixed strings have to be stable and are intended to be
+ * backwards/forwards compatible.  They are used in the computation of the
+ * message fingerprint (for message id) and in the JSON serialization of our
+ * messages to disk.  The actual classes that uses these typenames are free to
+ * change their names or use inheritance/composition/whatever as long as they
+ * eventually identify with one of these types.*/
+export type StableTypeName = string;
+export var /*const*/ TYPENAME_TEXT_PART:StableTypeName = "TextPart";
+export var /*const*/ TYPENAME_TAG_PAIR_BEGIN_REF:StableTypeName = "TagPairBegin";
+export var /*const*/ TYPENAME_TAG_PAIR_END_REF:StableTypeName = "TagPairEnd";
+export var /*const*/ TYPENAME_HTML_TAG_PAIR:StableTypeName = "HtmlTagPair";
+export var /*const*/ TYPENAME_NG_EXPR:StableTypeName = "NgExpr";
+
+(function init() {
   var typeNamesSeen = new Set<StableTypeName>();
 
   function registerStableTypeName<T extends MessagePartBase>(part: MessagePartBaseConstructor<T>, stableTypeName: StableTypeName) {
