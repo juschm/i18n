@@ -24,28 +24,6 @@ export interface MessagePartBaseConstructor<T extends MessagePartBase> {
   new(...args: any[]): T;
 }
 
-var _ALL_STABLE_TYPE_NAMES = new Set<StableTypeName>();
-
-function registerStableTypeName<T extends MessagePartBase>(part: MessagePartBaseConstructor<T>, stableTypeName: StableTypeName) {
-  var ctor = <any>(part);
-  if (_ALL_STABLE_TYPE_NAMES.has(stableTypeName)) {
-    throw Error(`Internal Error: Attempting to reuse stable type name: ${stableTypeName}`);
-  }
-  _ALL_STABLE_TYPE_NAMES.add(stableTypeName);
-  if (ctor.$stableTypeName !== void 0) {
-    throw Error(`Internal Error: Trying to re-register stable type name for type: ${ctor}`);
-  }
-  ctor.$stableTypeName = stableTypeName;
-}
-
-export function getStableTypeName(part: MessagePartBase): string {
-  var stableTypeName = (<any>part.constructor).$stableTypeName;
-  if (stableTypeName === void 0) {
-    throw Error(`Internal Error: Trying to get a stable type name for object of type: ${part.constructor}`);
-  }
-  return stableTypeName;
-}
-
 export interface ToLongFingerprint {
   (): string;
 }
@@ -61,8 +39,6 @@ export class TextPart implements MessagePartBase {
   // degenerate case.
   toLongFingerprint(): string { return this.value; }
 }
-
-registerStableTypeName(TextPart, TYPENAME_TEXT_PART);
 
 export interface Placeholder extends MessagePartBase {
   name: string;
@@ -81,8 +57,6 @@ export class NgExpr extends PlaceholderBase {
   toLongFingerprint(): string { return TYPENAME_NG_EXPR + this.text; }
 }
 
-registerStableTypeName(NgExpr, TYPENAME_NG_EXPR);
-
 // TagPairs, when serialized, will use a pair of placeholders to represent
 // their begin and end.  TagPairBeginRef and TagPairEndRef represent those placeholders.
 export class TagPairRefBase implements Placeholder {
@@ -93,10 +67,8 @@ export class TagPairRefBase implements Placeholder {
 }
 
 export class TagPairBeginRef extends TagPairRefBase {}
-registerStableTypeName(TagPairBeginRef, TYPENAME_TAG_PAIR_BEGIN_REF);
 
 export class TagPairEndRef extends TagPairRefBase {}
-registerStableTypeName(TagPairEndRef, TYPENAME_TAG_PAIR_END_REF);
 
 export class TagPair implements MessagePartBase {
   constructor(
@@ -147,8 +119,6 @@ export class HtmlTagPair extends TagPair {
   }
 }
 
-registerStableTypeName(HtmlTagPair, TYPENAME_HTML_TAG_PAIR);
-
 export interface PlaceHoldersMap {
   [placeholderName: string]: Placeholder;
 }
@@ -160,6 +130,38 @@ export class Message {
               public parts: MessagePart[],
               public placeholdersMap: PlaceHoldersMap) {}
 }
+
+export function getStableTypeName(part: MessagePartBase): string {
+  var stableTypeName = (<any>part.constructor).$stableTypeName;
+  if (stableTypeName === void 0) {
+    throw Error(`Internal Error: Trying to get a stable type name for object of type: ${part.constructor}`);
+  }
+  return stableTypeName;
+}
+
+
+(function() {
+  var typeNamesSeen = new Set<StableTypeName>();
+
+  function registerStableTypeName<T extends MessagePartBase>(part: MessagePartBaseConstructor<T>, stableTypeName: StableTypeName) {
+    var ctor = <any>(part);
+    if (typeNamesSeen.has(stableTypeName)) {
+      throw Error(`Internal Error: Attempting to reuse stable type name: ${stableTypeName}`);
+    }
+    typeNamesSeen.add(stableTypeName);
+    if (ctor.$stableTypeName !== void 0) {
+      throw Error(`Internal Error: Trying to re-register stable type name for type: ${ctor}`);
+    }
+    ctor.$stableTypeName = stableTypeName;
+  }
+
+  registerStableTypeName(TextPart, TYPENAME_TEXT_PART);
+  registerStableTypeName(NgExpr, TYPENAME_NG_EXPR);
+  registerStableTypeName(TagPairBeginRef, TYPENAME_TAG_PAIR_BEGIN_REF);
+  registerStableTypeName(TagPairEndRef, TYPENAME_TAG_PAIR_END_REF);
+  registerStableTypeName(HtmlTagPair, TYPENAME_HTML_TAG_PAIR);
+})();
+
 
 // Support importing from babeljs transpiled files.
 export var __esModule = true;

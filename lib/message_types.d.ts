@@ -14,7 +14,6 @@ export declare type MessagePart = TextPart | Placeholder | TagPair;
 export interface MessagePartBaseConstructor<T extends MessagePartBase> {
     new (...args: any[]): T;
 }
-export declare function getStableTypeName(part: MessagePartBase): string;
 export interface ToLongFingerprint {
     (): string;
 }
@@ -82,4 +81,5 @@ export declare class Message {
     placeholdersMap: PlaceHoldersMap;
     constructor(id: string, meaning: string, comment: string, parts: MessagePart[], placeholdersMap: PlaceHoldersMap);
 }
+export declare function getStableTypeName(part: MessagePartBase): string;
 export declare var __esModule: boolean;
