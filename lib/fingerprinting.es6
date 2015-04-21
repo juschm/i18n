@@ -44,12 +44,12 @@ function* _genIdPartsForSubparts(parts) {
     } else if (part instanceof M.PlaceholderBase) {
       placeholders.set(part.name, part);
     } else if (part instanceof M.TagPair) {
-      yield `${BEGIN_TAG}${part.beginPlaceholderRef.name},${part.getStableTypeName()}${ESCAPE_END}`;
+      yield `${BEGIN_TAG}${part.beginPlaceholderRef.name},${M.getStableTypeName(part)}${ESCAPE_END}`;
       for (let i in _genIdPartsForSubparts(part.parts)) {
         yield i;
       }
     } else {
-      throw Error(`Encountered unknown message part type while computing message ID: ${part.getStableTypeName()}`);
+      throw Error(`Encountered unknown message part type while computing message ID: ${M.getStableTypeName(part)}`);
     }
   }
   var placeholderNames = [];
@@ -59,6 +59,6 @@ function* _genIdPartsForSubparts(parts) {
   placeholderNames.sort();
   for (let name of placeholderNames) {
     var placeholder = placeholders.get(name);
-    yield `{BEGIN_PH}{name},{placeholder.getStableTypeName()}{ESCAPE_END}`;
+    yield `${BEGIN_PH}${name},${M.getStableTypeName(placeholder)}${ESCAPE_END}`;
   }
 }

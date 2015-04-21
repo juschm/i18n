@@ -11,17 +11,39 @@
  * messages to disk.  The actual classes that uses these typenames are free to
  * change their names or use inheritance/composition/whatever as long as they
  * eventually identify with one of these types.*/
-export var /*const*/ TYPENAME_TEXT_PART = "TextPart";
-export var /*const*/ TYPENAME_TAG_PAIR_BEGIN_REF = "TagPairBegin";
-export var /*const*/ TYPENAME_TAG_PAIR_END_REF = "TagPairEnd";
-export var /*const*/ TYPENAME_HTML_TAG_PAIR = "HtmlTagPair";
-export var /*const*/ TYPENAME_NG_EXPR = "NgExpr";
-
+export type StableTypeName = string;
+export var /*const*/ TYPENAME_TEXT_PART:StableTypeName = "TextPart";
+export var /*const*/ TYPENAME_TAG_PAIR_BEGIN_REF:StableTypeName = "TagPairBegin";
+export var /*const*/ TYPENAME_TAG_PAIR_END_REF:StableTypeName = "TagPairEnd";
+export var /*const*/ TYPENAME_HTML_TAG_PAIR:StableTypeName = "HtmlTagPair";
+export var /*const*/ TYPENAME_NG_EXPR:StableTypeName = "NgExpr";
 
 export type MessagePart = TextPart|Placeholder|TagPair;
 
-export interface GetStableTypeName {
-  (): string;
+export interface MessagePartBaseConstructor<T extends MessagePartBase> {
+  new(...args: any[]): T;
+}
+
+var _ALL_STABLE_TYPE_NAMES = new Set<StableTypeName>();
+
+function registerStableTypeName<T extends MessagePartBase>(part: MessagePartBaseConstructor<T>, stableTypeName: StableTypeName) {
+  var ctor = <any>(part);
+  if (_ALL_STABLE_TYPE_NAMES.has(stableTypeName)) {
+    throw Error(`Internal Error: Attempting to reuse stable type name: ${stableTypeName}`);
+  }
+  _ALL_STABLE_TYPE_NAMES.add(stableTypeName);
+  if (ctor.$stableTypeName !== void 0) {
+    throw Error(`Internal Error: Trying to re-register stable type name for type: ${ctor}`);
+  }
+  ctor.$stableTypeName = stableTypeName;
+}
+
+export function getStableTypeName(part: MessagePartBase): string {
+  var stableTypeName = (<any>part.constructor).$stableTypeName;
+  if (stableTypeName === void 0) {
+    throw Error(`Internal Error: Trying to get a stable type name for object of type: ${part.constructor}`);
+  }
+  return stableTypeName;
 }
 
 export interface ToLongFingerprint {
@@ -30,7 +52,6 @@ export interface ToLongFingerprint {
 
 export interface MessagePartBase {
   // such as "NgExpr", "HtmlTagPair", etc.
-  getStableTypeName: GetStableTypeName;
   toLongFingerprint: ToLongFingerprint;
 }
 
@@ -39,13 +60,9 @@ export class TextPart implements MessagePartBase {
 
   // degenerate case.
   toLongFingerprint(): string { return this.value; }
-
-  // NOTE: Do NOT replace the fixed string returned by this function with the
-  // expression "typeof this".  This name should be stable across versions to
-  // ensure stable message ids (hashing).
-  getStableTypeName(): string { return TYPENAME_TEXT_PART; }
-
 }
+
+registerStableTypeName(TextPart, TYPENAME_TEXT_PART);
 
 export interface Placeholder extends MessagePartBase {
   name: string;
@@ -57,15 +74,14 @@ export interface Placeholder extends MessagePartBase {
 export class PlaceholderBase implements MessagePartBase {
   constructor(public name: string, public text: string, public examples: string[], public comment: string) {}
   toLongFingerprint(): string { throw Error("You must use a subclass that overrides this method."); }
-  getStableTypeName(): string { throw Error("You must use a subclass that overrides this method."); }
 }
 
 export class NgExpr extends PlaceholderBase {
   // TODO: toLongFingerprint must calcuate this in a proper way.
   toLongFingerprint(): string { return TYPENAME_NG_EXPR + this.text; }
-  getStableTypeName(): string { return TYPENAME_NG_EXPR; }
 }
 
+registerStableTypeName(NgExpr, TYPENAME_NG_EXPR);
 
 // TagPairs, when serialized, will use a pair of placeholders to represent
 // their begin and end.  TagPairBeginRef and TagPairEndRef represent those placeholders.
@@ -74,25 +90,13 @@ export class TagPairRefBase implements Placeholder {
 
   // degenerate case.
   toLongFingerprint(): string { return this.text; }
-
-  getStableTypeName(): string { throw Error("You must use a subclass that overrides this method."); }
 }
 
-export class TagPairBeginRef extends TagPairRefBase {
-  // NOTE: Do NOT replace the fixed string returned by this function with the
-  // expression "typeof this".  This name should be stable across versions to
-  // ensure stable message ids (hashing).
-  getStableTypeName(): string { return TYPENAME_TAG_PAIR_BEGIN_REF; }
-}
+export class TagPairBeginRef extends TagPairRefBase {}
+registerStableTypeName(TagPairBeginRef, TYPENAME_TAG_PAIR_BEGIN_REF);
 
-export class TagPairEndRef extends TagPairRefBase {
-  // NOTE: Do NOT replace the fixed string returned by this function with the
-  // expression "typeof this".  This name should be stable across versions to
-  // ensure stable message ids (hashing).
-  getStableTypeName(): string { return TYPENAME_TAG_PAIR_END_REF; }
-}
-
-
+export class TagPairEndRef extends TagPairRefBase {}
+registerStableTypeName(TagPairEndRef, TYPENAME_TAG_PAIR_END_REF);
 
 export class TagPair implements MessagePartBase {
   constructor(
@@ -108,24 +112,16 @@ export class TagPair implements MessagePartBase {
       public tagFingerprintLong: string,
       public beginPlaceholderRef: TagPairBeginRef, // ph_begin
       public endPlaceholderRef: TagPairEndRef // ph_end
-  ) {
-    // Assert that only a subclass that has implemented a proper
-    // getStableTypeName() method is beging constructed.
-    this.getStableTypeName();
-  }
+  ) {}
 
   // degenerate case.
   toLongFingerprint(): string { return this.tagFingerprintLong; }
-
-  getStableTypeName(): string { throw Error("You must use a subclass that overrides this method."); }
 }
 
 
 export class HtmlTagPair extends TagPair {
   // degenerate case.
   toLongFingerprint(): string { return this.tagFingerprintLong; }
-
-  getStableTypeName(): string { return TYPENAME_HTML_TAG_PAIR; }
 
   static NewForParsing(
       tag: string,
@@ -150,6 +146,8 @@ export class HtmlTagPair extends TagPair {
                            tagFingerprintLong, beginPlaceholderRef, endPlaceholderRef);
   }
 }
+
+registerStableTypeName(HtmlTagPair, TYPENAME_HTML_TAG_PAIR);
 
 export interface PlaceHoldersMap {
   [placeholderName: string]: Placeholder;

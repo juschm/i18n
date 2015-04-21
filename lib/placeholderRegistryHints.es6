@@ -4,7 +4,7 @@ var getNameHintForHtmlTag = require("./placeholderRegistryHintsForHtmlTags").get
 
 export function getNameHintForPlaceholder(placeholder) {
   if (placeholder instanceof M.TagPair) {
-    var typeName = placeholder.getStableTypeName();
+    var typeName = M.getStableTypeName(placeholder);
     switch (typeName) {
       case M.TYPENAME_HTML_TAG_PAIR:
         return getNameHintForHtmlTag(placeholder.tag);
