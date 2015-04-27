@@ -1,12 +1,16 @@
+
+
+TYPESCRIPT_TARGET_LANG=ES5
+
 rule typescript_to_js
   description = typescript_to_js: $in → $out
   depfile = $in.d
-  command = ck typescript_write_depfile --depfile $in.d $in && tsc --target ES5 -d --sourceMap --out $out_js $in
+  command = ck typescript_write_depfile --depfile $in.d $in && tsc --target $TYPESCRIPT_TARGET_LANG -d --sourceMap --out $out_js $in
 
 
 rule typescript_to_nodejs
   description = typescript_to_nodejs: $in → $out
-  command = tsc --target ES5 --module commonjs -d --sourceMap $in
+  command = tsc --target $TYPESCRIPT_TARGET_LANG --module commonjs -d --sourceMap $in
 
 rule babeljs
   description = babel: $in → $out
@@ -14,14 +18,27 @@ rule babeljs
 
 
 
+build lib/newSet.js lib/newSet.d.ts: typescript_to_nodejs lib/newSet.ts
+  TYPESCRIPT_TARGET_LANG = ES5
+build lib/serializers/internalJson.js lib/serializers/internalJson.d.ts: $
+    typescript_to_nodejs lib/serializers/internalJson.ts
+  TYPESCRIPT_TARGET_LANG = ES5
+build lib/serializer.js lib/serializer.d.ts: typescript_to_nodejs $
+    lib/serializer.ts
+  TYPESCRIPT_TARGET_LANG = ES5
 build lib/message_types.js lib/message_types.d.ts: typescript_to_nodejs $
     lib/message_types.ts
+  TYPESCRIPT_TARGET_LANG = ES5
 build lib/config.js lib/config.d.ts: typescript_to_nodejs lib/config.ts
+  TYPESCRIPT_TARGET_LANG = ES5
 build lib/LoadingCache.js lib/LoadingCache.d.ts: typescript_to_nodejs $
     lib/LoadingCache.ts
+  TYPESCRIPT_TARGET_LANG = ES5
 build lib/extractMessages.js lib/extractMessages.d.ts: typescript_to_nodejs $
     lib/extractMessages.ts
+  TYPESCRIPT_TARGET_LANG = ES5
 build lib/Counter.js lib/Counter.d.ts: typescript_to_nodejs lib/Counter.ts
+  TYPESCRIPT_TARGET_LANG = ES5
 build lib/stringUtils.js: babeljs lib/stringUtils.es6
 build lib/quoting.js: babeljs lib/quoting.es6
 build lib/hashing.js: babeljs lib/hashing.es6

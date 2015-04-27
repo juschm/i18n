@@ -1,13 +1,3 @@
-/**
- * Message Types Reference
- *
- * Actual types will be in TypeScript 1.5+.  However, this TypeScript 1.4
- * version is the current official type specification.
- */
-export declare type MessagePart = TextPart | Placeholder | TagPair;
-export interface MessagePartBaseConstructor<T extends MessagePartBase> {
-    new (...args: any[]): T;
-}
 export declare type AbstractMessagePart = TextPart | Placeholder | TagPair;
 export declare type ConcretePlaceholder = NgExpr | TagPairBeginRef | TagPairEndRef;
 export declare type ConcreteTagPair = HtmlTagPair;
@@ -81,8 +71,10 @@ export declare class Message {
 export declare function getStableTypeName(part: SerializableTypes): string;
 export declare type StableTypeName = string;
 export declare const TYPENAME_TEXT_PART: StableTypeName;
+export declare const TYPENAME_NG_EXPR: StableTypeName;
 export declare const TYPENAME_TAG_PAIR_BEGIN_REF: StableTypeName;
 export declare const TYPENAME_TAG_PAIR_END_REF: StableTypeName;
 export declare const TYPENAME_HTML_TAG_PAIR: StableTypeName;
-export declare const TYPENAME_NG_EXPR: StableTypeName;
+export declare const TYPENAME_MESSAGE: StableTypeName;
+export declare const SERIALIZABLE_TYPES: Set<Function>;
 export declare var __esModule: boolean;

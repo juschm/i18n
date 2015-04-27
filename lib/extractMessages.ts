@@ -6,6 +6,7 @@ var ckckStringify = require('./../ckckStringify');
 
 import {loadAppConfig} from './config';
 import {Message} from './message_types';
+import SerializerRegistry from './serializer';
 
 var assert = require("assert"),
     fs = require("fs"),
@@ -19,7 +20,29 @@ function main() {
     // assertValidHtml(html);
     var rootNode = parseHtml(html);
     var messages:Map<string, Message> = parseMessages(rootNode);
-    console.log(ckckStringify(messages));
+
+    var logStringify = 0;
+    var logPojo = 0;
+    var logDumpParse = 1;
+
+    if (logStringify) {
+      console.log(ckckStringify(messages));
+    }
+
+    if (logPojo) {
+      var jsonSerializer = SerializerRegistry.create('json');
+      messages.forEach(function(value) {
+        console.log(jsonSerializer.stringify(value));
+      });
+    }
+
+    if (logDumpParse) {
+      var jsonSerializer = SerializerRegistry.create('json');
+      messages.forEach(function(value) {
+        console.log(jsonSerializer.stringify(jsonSerializer.parse(jsonSerializer.stringify(value))));
+      });
+    }
+
     // writeMessagesToJson(messages);
 
     // todo: compare with previous extraction?

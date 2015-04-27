@@ -3,8 +3,12 @@ declare function require(name:string);
 var assert = require("assert");
 var fs = require("fs");
 
+import registerJsonSerializer from './serializers/internalJson';
+registerJsonSerializer();
+
 export class AppConfig {
   htmlSrcs: string[];
+  // serializers: TODO
   // locales: [],
   // pseudoLocales: [],
   // web roots

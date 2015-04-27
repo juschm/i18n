@@ -1,6 +1,6 @@
 # -*- mode: python; -*- vim: set filetype=python:
 
-for ts_lib in "message_types config LoadingCache extractMessages Counter".split():
+for ts_lib in "newSet serializers/internalJson serializer message_types config LoadingCache extractMessages Counter".split():
   typescript_to_nodejs(
       name="lib/{0}".format(ts_lib),
       srcs=["lib/{0}.ts".format(ts_lib)])

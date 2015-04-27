@@ -20,7 +20,7 @@ babeljs() {
 }
 
 build_all() {
-  for f in message_types config LoadingCache extractMessages Counter ; do
+  for f in newSet serializers/internalJson serializer message_types config LoadingCache extractMessages Counter ; do
     typescript_to_js "lib/$f.ts"
   done
   for f in stringUtils quoting hashing fingerprinting parse_html parse_messages placeholderRegistry placeholderRegistryHints ; do

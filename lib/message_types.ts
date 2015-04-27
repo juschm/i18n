@@ -5,11 +5,8 @@
  * version is the current official type specification.
  */
 
-export type MessagePart = TextPart|Placeholder|TagPair;
-
-export interface MessagePartBaseConstructor<T extends MessagePartBase> {
-  new(...args: any[]): T;
-}
+// new Set(array) helper.
+import newSet from './newSet';
 
 export type AbstractMessagePart = TextPart|Placeholder|TagPair;
 export type ConcretePlaceholder = NgExpr|TagPairBeginRef|TagPairEndRef;
@@ -134,28 +131,50 @@ export function getStableTypeName(part: SerializableTypes): string {
 /* These fixed strings have to be stable and are intended to be
  * backwards/forwards compatible.  They are used in the computation of the
  * message fingerprint (for message id) and in the JSON serialization of our
- * messages to disk.  The actual classes that uses these typenames are free to
+ * messages to disk (potentially used by other file format serializers.)
+ *
+ * The actual classes that uses these typenames are free to
  * change their names or use inheritance/composition/whatever as long as they
- * eventually identify with one of these types.*/
+ * eventually identify with one of these types.
+ */
 export type StableTypeName = string;
 export const TYPENAME_TEXT_PART:StableTypeName = "TextPart";
+export const TYPENAME_NG_EXPR:StableTypeName = "NgExpr";
 export const TYPENAME_TAG_PAIR_BEGIN_REF:StableTypeName = "TagPairBegin";
 export const TYPENAME_TAG_PAIR_END_REF:StableTypeName = "TagPairEnd";
 export const TYPENAME_HTML_TAG_PAIR:StableTypeName = "HtmlTagPair";
-export const TYPENAME_NG_EXPR:StableTypeName = "NgExpr";
+export const TYPENAME_MESSAGE:StableTypeName = "Message";
+
+// This is the set of types that all serializer plugins (file format plugins
+// for JSON, XLIFF, etc.) have to support.  This list is available to those
+// plugins.  They can choose to throw an Error if a new type they do not
+// understand is added to this list.
+export const SERIALIZABLE_TYPES = Object.freeze(newSet<Function>([
+    TextPart,
+    NgExpr,
+    TagPairBeginRef,
+    TagPairEndRef,
+    HtmlTagPair,
+    Message
+]));
 
 (function init() {
   var typeNamesSeen = new Set<StableTypeName>();
+  // The following cast to <any> is required since TypeScript 1.5 does not
+  // understand the Set constructor that takes an Array(iterable) as a
+  // parameter.  The error we are avoiding is the following:
+  // TS2346: Supplied parameters do not match any signature of call target
+  var serializableTypes: Set<Function> = new (<any>Set)(SERIALIZABLE_TYPES);
 
-  function registerStableTypeName<T extends MessagePartBase>(part: MessagePartBaseConstructor<T>, stableTypeName: StableTypeName) {
-    var ctor = <any>(part);
+  function registerStableTypeName(ctor, stableTypeName: StableTypeName) {
     if (typeNamesSeen.has(stableTypeName)) {
       throw Error(`Internal Error: Attempting to reuse stable type name: ${stableTypeName}`);
     }
-    typeNamesSeen.add(stableTypeName);
-    if (ctor.$stableTypeName !== void 0) {
-      throw Error(`Internal Error: Trying to re-register stable type name for type: ${ctor}`);
+    if (!serializableTypes.has(ctor)) {
+      throw Error(`Internal Error: Type ${ctor} is either missing from SERIALIZABLE_TYPES or is registered again.`);
     }
+    typeNamesSeen.add(stableTypeName);
+    serializableTypes.delete(ctor);
     ctor.$stableTypeName = stableTypeName;
   }
 
@@ -164,6 +183,11 @@ export const TYPENAME_NG_EXPR:StableTypeName = "NgExpr";
   registerStableTypeName(TagPairBeginRef, TYPENAME_TAG_PAIR_BEGIN_REF);
   registerStableTypeName(TagPairEndRef, TYPENAME_TAG_PAIR_END_REF);
   registerStableTypeName(HtmlTagPair, TYPENAME_HTML_TAG_PAIR);
+  registerStableTypeName(Message, TYPENAME_MESSAGE);
+
+  if (typeNamesSeen.size !== SERIALIZABLE_TYPES.size || serializableTypes.size !== 0) {
+    throw Error(`Internal Error: Postcondition failed in init()`);
+  }
 })();
 
 
