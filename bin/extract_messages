@@ -3,9 +3,7 @@
 "use strict";
 
 var assert = require("assert"),
-    util = require("util"),
     fs = require("fs"),
-    parse5 = require("parse5"),
     parseHtml = require("../lib/parse_html.js").parseHtml,
     parseMessages = require("../lib/parse_messages.js").parseMessages;
 
@@ -19,9 +17,15 @@ function extractMessagesFromHtmlFile(fname) {
 
 
 function main() {
-  var SOURCE_HTML_FILENAME = "demo/index.html";
-  var messagesMap = extractMessagesFromHtmlFile(SOURCE_HTML_FILENAME);
-  console.log("%j", messagesMap);
+  var args = process.argv.slice(2);
+  if (args.length === 0) {
+      args = ["demo/index.html"];
+  }
+
+  args.forEach(function(htmlSrcFileName) {
+    var messagesMap = extractMessagesFromHtmlFile(htmlSrcFileName);
+    console.log("%j", messagesMap);
+  });
 }
 
 main();
