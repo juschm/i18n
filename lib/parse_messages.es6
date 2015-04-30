@@ -212,7 +212,7 @@ class MessageParser {
   constructor(onParse) {
     this.onParse = onParse;
     this.nodes = [];
-    this.messages = {};
+    this.messages = new Map();
   }
 
   _parseI18nAttribs(node) {
@@ -235,7 +235,7 @@ class MessageParser {
       let attrName = i18nAttr.name.substr(I18N_ATTRIB_PREFIX.length);
       let rawMessage = valuesByName.get(attrName);
       let message = new MessageBuilder(/*rawComment=*/i18nAttr.value, /*rawMessage*/rawMessage).build();
-      this.messages[message.id] = message;
+      this.messages.set(message.id, message);
       this.onParse.onAttrib(message, node, attrName);
     }
   }
@@ -247,7 +247,7 @@ class MessageParser {
       return false;
     }
     let message = new MessageBuilder(/*rawComment=*/i18nAttr.value, /*rawMessage*/node).build();
-    this.messages[message.id] = message;
+    this.messages.set(message.id, message);
     this.onParse.onNode(message, node);
     return true;
   }
