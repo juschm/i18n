@@ -8,6 +8,11 @@ export declare type MessagePart = TextPart | Placeholder | TagPair;
 export interface MessagePartBaseConstructor<T extends MessagePartBase> {
     new (...args: any[]): T;
 }
+export declare type AbstractMessagePart = TextPart | Placeholder | TagPair;
+export declare type ConcretePlaceholder = NgExpr | TagPairBeginRef | TagPairEndRef;
+export declare type ConcreteTagPair = HtmlTagPair;
+export declare type ConcreteMessagePart = TextPart | ConcretePlaceholder | ConcreteTagPair;
+export declare type SerializableTypes = ConcreteMessagePart | Message;
 export interface ToLongFingerprint {
     (): string;
 }
@@ -52,30 +57,28 @@ export declare class TagPair implements MessagePartBase {
     tag: string;
     begin: string;
     end: string;
-    parts: MessagePart[];
+    parts: ConcreteMessagePart[];
     examples: string[];
     tagFingerprintLong: string;
     beginPlaceholderRef: TagPairBeginRef;
     endPlaceholderRef: TagPairEndRef;
-    constructor(tag: string, begin: string, end: string, parts: MessagePart[], examples: string[], tagFingerprintLong: string, beginPlaceholderRef: TagPairBeginRef, endPlaceholderRef: TagPairEndRef);
+    constructor(tag: string, begin: string, end: string, parts: ConcreteMessagePart[], examples: string[], tagFingerprintLong: string, beginPlaceholderRef: TagPairBeginRef, endPlaceholderRef: TagPairEndRef);
     toLongFingerprint(): string;
 }
 export declare class HtmlTagPair extends TagPair {
     toLongFingerprint(): string;
-    static NewForParsing(tag: string, begin: string, end: string, parts: MessagePart[], examples: string[], tagFingerprintLong: string): HtmlTagPair;
+    static NewForParsing(tag: string, begin: string, end: string, parts: ConcreteMessagePart[], examples: string[], tagFingerprintLong: string): HtmlTagPair;
 }
-export interface PlaceHoldersMap {
-    [placeholderName: string]: Placeholder;
-}
+export declare type PlaceHoldersMap = Map<string, ConcretePlaceholder>;
 export declare class Message {
     id: string;
     meaning: string;
     comment: string;
-    parts: MessagePart[];
+    parts: ConcreteMessagePart[];
     placeholdersMap: PlaceHoldersMap;
-    constructor(id: string, meaning: string, comment: string, parts: MessagePart[], placeholdersMap: PlaceHoldersMap);
+    constructor(id: string, meaning: string, comment: string, parts: ConcreteMessagePart[], placeholdersMap: PlaceHoldersMap);
 }
-export declare function getStableTypeName(part: MessagePartBase): string;
+export declare function getStableTypeName(part: SerializableTypes): string;
 export declare type StableTypeName = string;
 export declare var TYPENAME_TEXT_PART: StableTypeName;
 export declare var TYPENAME_TAG_PAIR_BEGIN_REF: StableTypeName;

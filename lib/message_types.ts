@@ -11,6 +11,12 @@ export interface MessagePartBaseConstructor<T extends MessagePartBase> {
   new(...args: any[]): T;
 }
 
+export type AbstractMessagePart = TextPart|Placeholder|TagPair;
+export type ConcretePlaceholder = NgExpr|TagPairBeginRef|TagPairEndRef;
+export type ConcreteTagPair = HtmlTagPair;
+export type ConcreteMessagePart = TextPart|ConcretePlaceholder|ConcreteTagPair;
+export type SerializableTypes = ConcreteMessagePart|Message;
+
 export interface ToLongFingerprint {
   (): string;
 }
@@ -65,7 +71,7 @@ export class TagPair implements MessagePartBase {
       public begin: string,
       // original full end tag.
       public end: string,
-      public parts: MessagePart[],
+      public parts: ConcreteMessagePart[],
       public examples: string[],
       // canonical_key
       public tagFingerprintLong: string,
@@ -86,7 +92,7 @@ export class HtmlTagPair extends TagPair {
       tag: string,
       begin: string,
       end: string,
-      parts: MessagePart[],
+      parts: ConcreteMessagePart[],
       examples: string[],
       tagFingerprintLong: string): HtmlTagPair {
     var beginPlaceholderRef = new TagPairBeginRef(
@@ -106,19 +112,17 @@ export class HtmlTagPair extends TagPair {
   }
 }
 
-export interface PlaceHoldersMap {
-  [placeholderName: string]: Placeholder;
-}
+export type PlaceHoldersMap = Map<string, ConcretePlaceholder>;
 
 export class Message {
   constructor(public id: string,
               public meaning: string,
               public comment: string, /* CKCK: new */
-              public parts: MessagePart[],
+              public parts: ConcreteMessagePart[],
               public placeholdersMap: PlaceHoldersMap) {}
 }
 
-export function getStableTypeName(part: MessagePartBase): string {
+export function getStableTypeName(part: SerializableTypes): string {
   var stableTypeName = (<any>part.constructor).$stableTypeName;
   if (stableTypeName === void 0) {
     throw Error(`Internal Error: Trying to get a stable type name for object of type: ${part.constructor}`);
