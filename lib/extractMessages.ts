@@ -39,7 +39,10 @@ function main() {
     if (logDumpParse) {
       var jsonSerializer = SerializerRegistry.create('json');
       messages.forEach(function(value) {
-        console.log(jsonSerializer.stringify(jsonSerializer.parse(jsonSerializer.stringify(value))));
+        console.log("\n\nVALUE: %s\n\n", ckckStringify(value));
+        console.log("\n\nJSON: %s\n\n", jsonSerializer.stringify(value));
+        console.log("\n\nPARSED: %s\n\n", ckckStringify(jsonSerializer.parse(jsonSerializer.stringify(value))));
+        // console.log(jsonSerializer.stringify(jsonSerializer.parse(jsonSerializer.stringify(value))));
       });
     }
 

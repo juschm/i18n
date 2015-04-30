@@ -1,3 +1,6 @@
+///<reference path='../../typings/node/node.d.ts'/>
+import * as assert from 'assert';
+
 import * as M from '../message_types';
 import SerializerRegistry, {Serializer} from '../serializer';
 
@@ -11,14 +14,14 @@ import newSet from './../newSet';
  *   explain message_types vs pojo_types
  */
 
-function freeze<T>(obj:T): T { return Object.freeze(obj); }
+const TYPENAME_PLACEHOLDER_BY_NAME = "Placeholder";
+
+type PlaceholderPojo = NgExprPojo|TagPairBeginRefPojo|TagPairEndRefPojo;
+type MessagePartPojo = TextPartPojo|PlaceholderNamePojo|HtmlTagPairPojo;
 
 interface PojoBase {
-  $stableTypeName: M.StableTypeName;
+  $type: M.StableTypeName;
 }
-
-const SERIALIZABLE_TYPES = Object.freeze(newSet<Function>([
-    M.TextPart, M.NgExpr, M.TagPairBeginRef, M.TagPairEndRef, M.HtmlTagPair, M.Message]));
 
 interface TextPartPojo extends PojoBase {
   value: string;
@@ -26,7 +29,7 @@ interface TextPartPojo extends PojoBase {
 
 function textPartToPojo(part: M.TextPart): TextPartPojo {
   return {
-    $stableTypeName: M.getStableTypeName(part),
+    $type: M.getStableTypeName(part),
     value: part.value
   };
 }
@@ -44,7 +47,7 @@ interface _PlaceholderPojo extends PojoBase {
 
 function _placeholderToPojo(part: M.NgExpr|M.TagPairBeginRef|M.TagPairEndRef): _PlaceholderPojo {
   return {
-    $stableTypeName: M.getStableTypeName(part),
+    $type: M.getStableTypeName(part),
     name: part.name,
     text: part.text,
     examples: part.examples,
@@ -55,6 +58,11 @@ function _placeholderToPojo(part: M.NgExpr|M.TagPairBeginRef|M.TagPairEndRef): _
 type NgExprPojo = _PlaceholderPojo;
 type TagPairBeginRefPojo = _PlaceholderPojo;
 type TagPairEndRefPojo = _PlaceholderPojo;
+
+// M.ConcretePlaceholder types are all serialized into a reference to just their name.
+interface PlaceholderNamePojo extends PojoBase {
+  name: string;
+}
 
 function ngExprToPojo(part: M.NgExpr): NgExprPojo {
   return _placeholderToPojo(part);
@@ -84,63 +92,104 @@ interface HtmlTagPairPojo extends PojoBase {
   tag: string;
   begin: string;
   end: string;
-  parts: PojoTypes[];
+  parts: MessagePartPojo[];
   examples: string[];
   tagFingerprintLong: string;
-  beginPlaceholderRef: TagPairBeginRefPojo;
-  endPlaceholderRef: TagPairEndRefPojo;
+  beginPlaceholderRef: PlaceholderNamePojo;
+  endPlaceholderRef: PlaceholderNamePojo;
 }
 
-function partsToPojo(parts: M.ConcreteMessagePart[]): PojoTypes[] {
-  var results: PojoTypes[] = [];
+function partsToPojo(parts: M.ConcreteMessagePart[]): MessagePartPojo[] {
+  var results: MessagePartPojo[] = [];
   parts.forEach(function(part) {
-    results.push(toPojo(part));
+    results.push(messagePartToPojo(part));
   });
   return results;
 }
 
-function partsFromPojo(pojos: PojoTypes[]): M.ConcreteMessagePart[] {
+function messagePartToPojo(obj: M.ConcreteMessagePart): MessagePartPojo {
+  var stableTypeName = M.getStableTypeName(obj);
+  switch (stableTypeName) {
+    case M.TYPENAME_TEXT_PART:
+        return textPartToPojo(<M.TextPart>obj);
+    case M.TYPENAME_NG_EXPR:
+    case M.TYPENAME_TAG_PAIR_BEGIN_REF:
+    case M.TYPENAME_TAG_PAIR_END_REF:
+      return placeholderToNamePojo(<M.ConcretePlaceholder>obj);
+    case M.TYPENAME_HTML_TAG_PAIR:
+        return htmlTagPairToPojo(<M.HtmlTagPair>obj);
+    default: throw Error(`Error: Don't know how to serialize type ${stableTypeName}`);
+  }
+}
+
+function messagePartFromPojo(obj: MessagePartPojo, placeholdersMap: M.PlaceHoldersMap): M.ConcreteMessagePart {
+  var stableTypeName = obj.$type;
+  switch (stableTypeName) {
+    case M.TYPENAME_TEXT_PART:
+        return textPartFromPojo(<TextPartPojo>obj);
+    case TYPENAME_PLACEHOLDER_BY_NAME:
+        return placeholderFromNamePojo(<PlaceholderNamePojo>obj, placeholdersMap);
+    case M.TYPENAME_HTML_TAG_PAIR:
+        return htmlTagPairFromPojo(<HtmlTagPairPojo>obj, placeholdersMap);
+    default:
+        throw Error(`Error: Don't know how to de-serialize type ${stableTypeName}`);
+  }
+}
+
+function placeholderToNamePojo(obj: M.ConcretePlaceholder): PlaceholderNamePojo {
+  return {
+    $type: TYPENAME_PLACEHOLDER_BY_NAME,
+    name: obj.name
+  };
+}
+
+function placeholderFromNamePojo(obj: PlaceholderNamePojo, placeholdersMap: M.PlaceHoldersMap): M.ConcretePlaceholder {
+  assert(placeholdersMap.has(obj.name));
+  return placeholdersMap.get(obj.name);
+}
+
+function messagePartsFromPojo(pojos: MessagePartPojo[], placeholdersMap: M.PlaceHoldersMap): M.ConcreteMessagePart[] {
   var parts: M.ConcreteMessagePart[] = [];
   pojos.forEach(function(pojo) {
-    parts.push(<M.ConcreteMessagePart>fromPojo(pojo));
+    parts.push(messagePartFromPojo(pojo, placeholdersMap));
   });
   return parts;
 }
 
 function htmlTagPairToPojo(htmlTagPair: M.HtmlTagPair): HtmlTagPairPojo {
   return {
-    $stableTypeName: M.getStableTypeName(htmlTagPair),
+    $type: M.getStableTypeName(htmlTagPair),
     tag: htmlTagPair.tag,
     begin: htmlTagPair.begin,
     end: htmlTagPair.end,
     parts: partsToPojo(htmlTagPair.parts),
     examples: htmlTagPair.examples,
     tagFingerprintLong: htmlTagPair.tagFingerprintLong,
-    beginPlaceholderRef: beginPlaceholderRefToPojo(htmlTagPair.beginPlaceholderRef),
-    endPlaceholderRef: endPlaceholderRefToPojo(htmlTagPair.endPlaceholderRef)
+    beginPlaceholderRef: placeholderToNamePojo(htmlTagPair.beginPlaceholderRef),
+    endPlaceholderRef: placeholderToNamePojo(htmlTagPair.endPlaceholderRef)
   };
 }
 
-function htmlTagPairFromPojo(pojo: HtmlTagPairPojo): M.HtmlTagPair {
+function htmlTagPairFromPojo(pojo: HtmlTagPairPojo, phMap: M.PlaceHoldersMap): M.HtmlTagPair {
   return new M.HtmlTagPair(pojo.tag,
                            pojo.begin,
                            pojo.end,
-                           partsFromPojo(pojo.parts),
+                           messagePartsFromPojo(pojo.parts, phMap),
                            pojo.examples,
                            pojo.tagFingerprintLong,
-                           beginPlaceholderRefFromPojo(pojo.beginPlaceholderRef),
-                           endPlaceholderRefFromPojo(pojo.endPlaceholderRef));
+                           placeholderFromNamePojo(pojo.beginPlaceholderRef, phMap),
+                           placeholderFromNamePojo(pojo.endPlaceholderRef, phMap));
 }
 
 interface PlaceholdersMapPojo {
-  [id: string]: PlaceholderPojoTypes
+  [id: string]: PlaceholderPojo
 }
 
 interface MessagePojo extends PojoBase {
   id: string;
   meaning: string;
   comment: string;
-  parts: PojoTypes[];
+  parts: MessagePartPojo[];
   placeholdersMap: PlaceholdersMapPojo;
 }
 
@@ -148,7 +197,7 @@ interface MessagePojo extends PojoBase {
 function placeholdersMapToPojo(placeholdersMap: M.PlaceHoldersMap): PlaceholdersMapPojo {
   var results: PlaceholdersMapPojo = {};
   placeholdersMap.forEach(function(placeholder, key) {
-    results[key] = (<PlaceholderPojoTypes>toPojo(placeholder));
+    results[key] = placeholderToPojo(placeholder);
   });
   return results;
 }
@@ -156,7 +205,7 @@ function placeholdersMapToPojo(placeholdersMap: M.PlaceHoldersMap): Placeholders
 function placeholdersMapFromPojo(pojos: PlaceholdersMapPojo): M.PlaceHoldersMap {
   var placeholdersMap: M.PlaceHoldersMap = new Map<string, M.ConcretePlaceholder>();
   Object.keys(pojos).forEach(function(key) {
-    var placeholder = <M.ConcretePlaceholder>fromPojo(pojos[key]);
+    var placeholder = <M.ConcretePlaceholder>placeholderFromPojo(pojos[key]);
     placeholdersMap.set(key, placeholder);
   });
   return placeholdersMap;
@@ -164,7 +213,7 @@ function placeholdersMapFromPojo(pojos: PlaceholdersMapPojo): M.PlaceHoldersMap 
 
 function messageToPojo(msg: M.Message): MessagePojo {
   return {
-    $stableTypeName: M.getStableTypeName(msg),
+    $type: M.getStableTypeName(msg),
     id: msg.id,
     meaning: msg.meaning,
     comment: msg.comment,
@@ -174,64 +223,49 @@ function messageToPojo(msg: M.Message): MessagePojo {
 }
 
 function messageFromPojo(pojo: MessagePojo): M.Message {
+  assert(pojo.$type === M.TYPENAME_MESSAGE);
+  var placeholdersMap = placeholdersMapFromPojo(pojo.placeholdersMap);
   return new M.Message(pojo.id,
                        pojo.meaning,
                        pojo.comment,
-                       partsFromPojo(pojo.parts),
-                       placeholdersMapFromPojo(pojo.placeholdersMap));
+                       messagePartsFromPojo(pojo.parts, placeholdersMap),
+                       placeholdersMap);
 }
 
-type PlaceholderPojoTypes = NgExprPojo|TagPairBeginRefPojo|TagPairEndRefPojo;
-type PojoTypes = TextPartPojo|PlaceholderPojoTypes|HtmlTagPairPojo|MessagePojo;
-
-
-function toPojo(obj: M.SerializableTypes): PojoTypes {
+function placeholderToPojo(obj: M.ConcretePlaceholder): PlaceholderPojo {
   var stableTypeName = M.getStableTypeName(obj);
   switch (stableTypeName) {
-    case M.TYPENAME_TEXT_PART:
-        return textPartToPojo(<M.TextPart>obj);
     case M.TYPENAME_NG_EXPR:
         return ngExprToPojo(<M.NgExpr>obj);
     case M.TYPENAME_TAG_PAIR_BEGIN_REF:
         return beginPlaceholderRefToPojo(<M.TagPairBeginRef>obj);
     case M.TYPENAME_TAG_PAIR_END_REF:
         return endPlaceholderRefToPojo(<M.TagPairEndRef>obj);
-    case M.TYPENAME_HTML_TAG_PAIR:
-        return htmlTagPairToPojo(<M.HtmlTagPair>obj);
-    case M.TYPENAME_MESSAGE:
-        return messageToPojo(<M.Message>obj);
     default: throw Error(`Error: Don't know how to serialize type ${stableTypeName}`);
   }
 }
 
-
-function fromPojo(obj: PojoTypes): M.SerializableTypes {
-  var stableTypeName = obj.$stableTypeName;
+function placeholderFromPojo(obj: PlaceholderPojo): M.ConcretePlaceholder {
+  var stableTypeName = obj.$type;
   switch (stableTypeName) {
-    case M.TYPENAME_TEXT_PART:
-        return textPartFromPojo(<TextPartPojo>obj);
     case M.TYPENAME_NG_EXPR:
         return ngExprFromPojo(<NgExprPojo>obj);
     case M.TYPENAME_TAG_PAIR_BEGIN_REF:
         return beginPlaceholderRefFromPojo(<TagPairBeginRefPojo>obj);
     case M.TYPENAME_TAG_PAIR_END_REF:
         return endPlaceholderRefFromPojo(<TagPairEndRefPojo>obj);
-    case M.TYPENAME_HTML_TAG_PAIR:
-        return htmlTagPairFromPojo(<HtmlTagPairPojo>obj);
-    case M.TYPENAME_MESSAGE:
-        return messageFromPojo(<MessagePojo>obj);
     default:
-        throw Error(`Error: Don't know how to serialize type ${stableTypeName}`);
+        throw Error(`Error: Don't know how to de-serialize type ${stableTypeName}`);
   }
 }
 
-
 class JsonSerializer implements Serializer {
   stringify(obj) {
-    return JSON.stringify(toPojo(obj), null, 4);
+    assert(M.getStableTypeName(obj) === M.TYPENAME_MESSAGE);
+    return JSON.stringify(messageToPojo(obj), null, 4);
   }
   parse(s) {
-    return fromPojo(JSON.parse(s));
+    return messageFromPojo(JSON.parse(s));
   }
 }
 
@@ -242,6 +276,8 @@ function newSerializer(): Serializer {
   throw Error(`Error: JSON serializer is not configurable.`);
 }
 
+const SERIALIZABLE_TYPES = Object.freeze(newSet<Function>([
+    M.TextPart, M.NgExpr, M.TagPairBeginRef, M.TagPairEndRef, M.HtmlTagPair, M.Message]));
 
 function verifyCompatibleSerializableTypes() {
   if (SERIALIZABLE_TYPES.size !== M.SERIALIZABLE_TYPES.size) {
