@@ -1,4 +1,5 @@
-import assert from 'assert';
+///<reference path='../typings/node/node.d.ts'/>
+import * as assert from 'assert';
 
 function _repeatForever(value) {
   return function next() {
