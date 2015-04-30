@@ -80,9 +80,9 @@ export declare class Message {
 }
 export declare function getStableTypeName(part: SerializableTypes): string;
 export declare type StableTypeName = string;
-export declare var TYPENAME_TEXT_PART: StableTypeName;
-export declare var TYPENAME_TAG_PAIR_BEGIN_REF: StableTypeName;
-export declare var TYPENAME_TAG_PAIR_END_REF: StableTypeName;
-export declare var TYPENAME_HTML_TAG_PAIR: StableTypeName;
-export declare var TYPENAME_NG_EXPR: StableTypeName;
+export declare const TYPENAME_TEXT_PART: StableTypeName;
+export declare const TYPENAME_TAG_PAIR_BEGIN_REF: StableTypeName;
+export declare const TYPENAME_TAG_PAIR_END_REF: StableTypeName;
+export declare const TYPENAME_HTML_TAG_PAIR: StableTypeName;
+export declare const TYPENAME_NG_EXPR: StableTypeName;
 export declare var __esModule: boolean;

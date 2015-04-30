@@ -138,11 +138,11 @@ export function getStableTypeName(part: SerializableTypes): string {
  * change their names or use inheritance/composition/whatever as long as they
  * eventually identify with one of these types.*/
 export type StableTypeName = string;
-export var /*const*/ TYPENAME_TEXT_PART:StableTypeName = "TextPart";
-export var /*const*/ TYPENAME_TAG_PAIR_BEGIN_REF:StableTypeName = "TagPairBegin";
-export var /*const*/ TYPENAME_TAG_PAIR_END_REF:StableTypeName = "TagPairEnd";
-export var /*const*/ TYPENAME_HTML_TAG_PAIR:StableTypeName = "HtmlTagPair";
-export var /*const*/ TYPENAME_NG_EXPR:StableTypeName = "NgExpr";
+export const TYPENAME_TEXT_PART:StableTypeName = "TextPart";
+export const TYPENAME_TAG_PAIR_BEGIN_REF:StableTypeName = "TagPairBegin";
+export const TYPENAME_TAG_PAIR_END_REF:StableTypeName = "TagPairEnd";
+export const TYPENAME_HTML_TAG_PAIR:StableTypeName = "HtmlTagPair";
+export const TYPENAME_NG_EXPR:StableTypeName = "NgExpr";
 
 (function init() {
   var typeNamesSeen = new Set<StableTypeName>();
