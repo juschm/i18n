@@ -15,7 +15,7 @@ typescript_to_js() {
 
 babeljs() {
   set -x
-  babel --source-maps --stage 0 --out-file "$2" "$1"
+  babel --optional runtime --source-maps --stage 0 --out-file "$2" "$1"
   set +x
 }
 
