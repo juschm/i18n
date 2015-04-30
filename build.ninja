@@ -41,7 +41,8 @@ build lib/Counter.js lib/Counter.d.ts: typescript_to_nodejs lib/Counter.ts
   TYPESCRIPT_TARGET_LANG = ES5
 build lib/stringUtils.js lib/stringUtils.d.ts: typescript_to_nodejs lib/stringUtils.ts
   TYPESCRIPT_TARGET_LANG = ES5
-build lib/quoting.js: babeljs lib/quoting.es6
+build lib/quoting.js lib/quoting.d.ts: typescript_to_nodejs lib/quoting.ts
+  TYPESCRIPT_TARGET_LANG = ES5
 build lib/hashing.js: babeljs lib/hashing.es6
 build lib/fingerprinting.js: babeljs lib/fingerprinting.es6
 build lib/parse_html.js: babeljs lib/parse_html.es6
