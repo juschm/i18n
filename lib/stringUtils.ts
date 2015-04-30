@@ -1,13 +1,24 @@
 ///<reference path='../typings/node/node.d.ts'/>
 import * as assert from 'assert';
 
-function _repeatForever(value) {
-  return function next() {
+interface GetValue<T> {
+  (): T
+}
+
+interface Iterator<T> {
+  next: GetValue<T>;
+}
+
+type StringIterator = Iterator<string>;
+type ShouldContinueFn = GetValue<boolean>;
+
+function _repeatForever<T>(value: T): GetValue<T> {
+  return function next(): T {
     return value;
   };
 }
 
-function _repeatN(n, value, finalValue) {
+function _repeatN<T>(n: number, value: T, finalValue: T): GetValue<T> {
   if (n === void 0 || n == -1) {
     return _repeatForever(value);
   }
@@ -22,7 +33,7 @@ function _repeatN(n, value, finalValue) {
   };
 }
 
-function _splitFromLeft(text, separator, shouldContinueFn) {
+function _splitFromLeft(text: string, separator: string, shouldContinueFn: ShouldContinueFn): StringIterator {
   var i = 0;
   var iterator = { next: next };
   function next() {
@@ -42,7 +53,7 @@ function _splitFromLeft(text, separator, shouldContinueFn) {
   return iterator;
 }
 
-function _splitFromRight(text, separator, shouldContinueFn) {
+function _splitFromRight(text: string, separator: string, shouldContinueFn: ShouldContinueFn): StringIterator {
   var i = text.length;
   var iterator = { next: next };
   var sepEnd, i2;
@@ -70,7 +81,7 @@ function _splitFromRight(text, separator, shouldContinueFn) {
 }
 
 // split at most maxTimes.
-export function splitN(text, separator, maxTimes, fromRight) {
+export function splitN(text: string, separator: string, maxTimes: number, fromRight: boolean): string[] {
   assert(maxTimes === void 0 || (maxTimes >= -1 && Math.floor(maxTimes) == maxTimes), "maxTimes must be an integer >= -1");
   assert(separator != "" && typeof separator == "string", "separator cannot be an empty string");
   var shouldContinueFn = _repeatN(maxTimes, true, false);
@@ -82,7 +93,7 @@ export function splitN(text, separator, maxTimes, fromRight) {
   return pieces;
 }
 
-export function quoteString(value, dQuoteReplacement) {
+export function quoteString(value: string, dQuoteReplacement: string): string {
   var quoteTypes = (value.indexOf("'") != -1 ? 1 : 0) + (value.indexOf('"') != -1 ? 2 : 0);
   // If there are double quotes in the string but no single quotes,
   // then simply wrap with single quotes and return. No escaping needed.
