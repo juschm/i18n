@@ -1,1 +1,1 @@
-export declare function quoteHtmlAttribute(value: any): string;
+export declare function quoteHtmlAttribute(value: string): string;
