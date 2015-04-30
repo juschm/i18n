@@ -3,7 +3,7 @@ declare function require(name:string);
 var assert = require("assert");
 var fs = require("fs");
 
-import registerJsonSerializer from './serializers/internalJson';
+import registerJsonSerializer from './serializers/json';
 registerJsonSerializer();
 
 export class AppConfig {

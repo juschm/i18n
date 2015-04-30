@@ -20,8 +20,8 @@ rule babeljs
 
 build lib/newSet.js lib/newSet.d.ts: typescript_to_nodejs lib/newSet.ts
   TYPESCRIPT_TARGET_LANG = ES5
-build lib/serializers/internalJson.js lib/serializers/internalJson.d.ts: $
-    typescript_to_nodejs lib/serializers/internalJson.ts
+build lib/serializers/json.js lib/serializers/json.d.ts: $
+    typescript_to_nodejs lib/serializers/json.ts
   TYPESCRIPT_TARGET_LANG = ES5
 build lib/serializer.js lib/serializer.d.ts: typescript_to_nodejs $
     lib/serializer.ts
