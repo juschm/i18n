@@ -5,10 +5,7 @@
     "meaning": null,
     "comment": "Document title",
     "parts": [
-        {
-            "$type": "TextPart",
-            "value": "Angular i18n Demo"
-        }
+        "Angular i18n Demo"
     ],
     "placeholdersMap": {}
 },
@@ -18,14 +15,10 @@
     "meaning": "firstname",
     "comment": "Greet the user",
     "parts": [
-        {
-            "$type": "TextPart",
-            "value": "Hello "
-        },
-        {
-            "$type": "Placeholder",
-            "name": "EXPRESSION"
-        }
+        "Hello ",
+        [
+            "EXPRESSION"
+        ]
     ],
     "placeholdersMap": {
         "EXPRESSION": {
@@ -43,10 +36,7 @@
     "meaning": "firstname",
     "comment": "Input placeholder for user's name",
     "parts": [
-        {
-            "$type": "TextPart",
-            "value": "Enter your name"
-        }
+        "Enter your name"
     ],
     "placeholdersMap": {}
 },
@@ -56,70 +46,47 @@
     "meaning": null,
     "comment": "block with EMBEDDED SPANs",
     "parts": [
-        {
-            "$type": "TextPart",
-            "value": "\n    Hello "
-        },
-        {
-            "$type": "Placeholder",
-            "name": "EXPRESSION"
-        },
-        {
-            "$type": "TextPart",
-            "value": " "
-        },
+        "\n    Hello ",
+        [
+            "EXPRESSION"
+        ],
+        " ",
         {
             "$type": "HtmlTagPair",
             "tag": "span",
             "begin": "<span>",
             "end": "</span>",
             "parts": [
-                {
-                    "$type": "TextPart",
-                    "value": "First span contains "
-                },
+                "First span contains ",
                 {
                     "$type": "HtmlTagPair",
                     "tag": "span",
                     "begin": "<span class=\"inner span\">",
                     "end": "</span>",
                     "parts": [
-                        {
-                            "$type": "TextPart",
-                            "value": "a second span"
-                        }
+                        "a second span"
                     ],
                     "examples": null,
                     "tagFingerprintLong": "TAG_span_1",
-                    "beginPlaceholderRef": {
-                        "$type": "Placeholder",
-                        "name": "SPAN_BEGIN"
-                    },
-                    "endPlaceholderRef": {
-                        "$type": "Placeholder",
-                        "name": "SPAN_END"
-                    }
+                    "beginPlaceholderRef": [
+                        "SPAN_BEGIN"
+                    ],
+                    "endPlaceholderRef": [
+                        "SPAN_END"
+                    ]
                 },
-                {
-                    "$type": "TextPart",
-                    "value": " inside it"
-                }
+                " inside it"
             ],
             "examples": null,
             "tagFingerprintLong": "TAG_span_2",
-            "beginPlaceholderRef": {
-                "$type": "Placeholder",
-                "name": "SPAN_BEGIN_1"
-            },
-            "endPlaceholderRef": {
-                "$type": "Placeholder",
-                "name": "SPAN_END_1"
-            }
+            "beginPlaceholderRef": [
+                "SPAN_BEGIN_1"
+            ],
+            "endPlaceholderRef": [
+                "SPAN_END_1"
+            ]
         },
-        {
-            "$type": "TextPart",
-            "value": " your world!\n  "
-        }
+        " your world!\n  "
     ],
     "placeholdersMap": {
         "EXPRESSION": {
@@ -173,56 +140,36 @@
     "meaning": null,
     "comment": "block with TEST html",
     "parts": [
-        {
-            "$type": "TextPart",
-            "value": "\n    TEST "
-        },
-        {
-            "$type": "Placeholder",
-            "name": "NAME"
-        },
-        {
-            "$type": "Placeholder",
-            "name": "NAME"
-        },
-        {
-            "$type": "TextPart",
-            "value": " "
-        },
+        "\n    TEST ",
+        [
+            "NAME"
+        ],
+        [
+            "NAME"
+        ],
+        " ",
         {
             "$type": "HtmlTagPair",
             "tag": "span",
             "begin": "<span>",
             "end": "</span>",
             "parts": [
-                {
-                    "$type": "TextPart",
-                    "value": "and"
-                }
+                "and"
             ],
             "examples": null,
             "tagFingerprintLong": "TAG_span_1",
-            "beginPlaceholderRef": {
-                "$type": "Placeholder",
-                "name": "SPAN_BEGIN"
-            },
-            "endPlaceholderRef": {
-                "$type": "Placeholder",
-                "name": "SPAN_END"
-            }
+            "beginPlaceholderRef": [
+                "SPAN_BEGIN"
+            ],
+            "endPlaceholderRef": [
+                "SPAN_END"
+            ]
         },
-        {
-            "$type": "TextPart",
-            "value": " your "
-        },
-        {
-            "$type": "Placeholder",
-            "name": "NAME"
-        },
-        {
-            "$type": "TextPart",
-            "value": " world!\n  "
-        }
+        " your ",
+        [
+            "NAME"
+        ],
+        " world!\n  "
     ],
     "placeholdersMap": {
         "NAME": {
@@ -260,31 +207,25 @@
     "meaning": "greeting",
     "comment": "Greet the user",
     "parts": [
-        {
-            "$type": "TextPart",
-            "value": "Hello "
-        },
+        "Hello ",
         {
             "$type": "HtmlTagPair",
             "tag": "b",
             "begin": "<b>",
             "end": "</b>",
             "parts": [
-                {
-                    "$type": "Placeholder",
-                    "name": "EXPRESSION"
-                }
+                [
+                    "EXPRESSION"
+                ]
             ],
             "examples": null,
             "tagFingerprintLong": "TAG_b_1",
-            "beginPlaceholderRef": {
-                "$type": "Placeholder",
-                "name": "BOLD_TEXT_BEGIN"
-            },
-            "endPlaceholderRef": {
-                "$type": "Placeholder",
-                "name": "BOLD_TEXT_END"
-            }
+            "beginPlaceholderRef": [
+                "BOLD_TEXT_BEGIN"
+            ],
+            "endPlaceholderRef": [
+                "BOLD_TEXT_END"
+            ]
         }
     ],
     "placeholdersMap": {
@@ -321,14 +262,10 @@
     "meaning": "firstname",
     "comment": "Input placeholder for user's name",
     "parts": [
-        {
-            "$type": "TextPart",
-            "value": "Enter your name, "
-        },
-        {
-            "$type": "Placeholder",
-            "name": "USERNAME"
-        }
+        "Enter your name, ",
+        [
+            "USERNAME"
+        ]
     ],
     "placeholdersMap": {
         "USERNAME": {

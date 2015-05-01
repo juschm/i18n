@@ -14,8 +14,6 @@ import newSet from './../newSet';
  *   explain message_types vs pojo_types
  */
 
-const TYPENAME_PLACEHOLDER_BY_NAME = "Placeholder";
-
 type PlaceholderPojo = NgExprPojo|TagPairBeginRefPojo|TagPairEndRefPojo;
 type MessagePartPojo = TextPartPojo|PlaceholderNamePojo|HtmlTagPairPojo;
 
@@ -23,19 +21,14 @@ interface PojoBase {
   $type: M.StableTypeName;
 }
 
-interface TextPartPojo extends PojoBase {
-  value: string;
-}
+type TextPartPojo = string;
 
 function textPartToPojo(part: M.TextPart): TextPartPojo {
-  return {
-    $type: M.getStableTypeName(part),
-    value: part.value
-  };
+  return part.value;
 }
 
 function textPartFromPojo(pojo: TextPartPojo): M.TextPart {
-  return new M.TextPart(pojo.value);
+  return new M.TextPart(pojo);
 }
 
 interface _PlaceholderPojo extends PojoBase {
@@ -60,8 +53,8 @@ type TagPairBeginRefPojo = _PlaceholderPojo;
 type TagPairEndRefPojo = _PlaceholderPojo;
 
 // M.ConcretePlaceholder types are all serialized into a reference to just their name.
-interface PlaceholderNamePojo extends PojoBase {
-  name: string;
+interface PlaceholderNamePojo {
+  0: string;  // the placeholder name
 }
 
 function ngExprToPojo(part: M.NgExpr): NgExprPojo {
@@ -109,43 +102,39 @@ function partsToPojo(parts: M.ConcreteMessagePart[]): MessagePartPojo[] {
 
 function messagePartToPojo(obj: M.ConcreteMessagePart): MessagePartPojo {
   var stableTypeName = M.getStableTypeName(obj);
-  switch (stableTypeName) {
-    case M.TYPENAME_TEXT_PART:
-        return textPartToPojo(<M.TextPart>obj);
-    case M.TYPENAME_NG_EXPR:
-    case M.TYPENAME_TAG_PAIR_BEGIN_REF:
-    case M.TYPENAME_TAG_PAIR_END_REF:
-      return placeholderToNamePojo(<M.ConcretePlaceholder>obj);
-    case M.TYPENAME_HTML_TAG_PAIR:
-        return htmlTagPairToPojo(<M.HtmlTagPair>obj);
-    default: throw Error(`Error: Don't know how to serialize type ${stableTypeName}`);
+  if (obj instanceof M.TextPart) {
+    assert(stableTypeName === M.TYPENAME_TEXT_PART);
+    return textPartToPojo(obj);
+  } else if (obj instanceof M.NgExpr || obj instanceof M.TagPairBeginRef || obj instanceof M.TagPairEndRef) {
+    assert(stableTypeName === M.TYPENAME_NG_EXPR || stableTypeName === M.TYPENAME_TAG_PAIR_BEGIN_REF || stableTypeName === M.TYPENAME_TAG_PAIR_END_REF);
+    return placeholderToNamePojo(obj);
+  } else if (obj instanceof M.HtmlTagPair) {
+    assert(stableTypeName === M.TYPENAME_HTML_TAG_PAIR);
+    return htmlTagPairToPojo(obj);
+  } else {
+    throw Error(`Error: Don't know how to serialize type ${stableTypeName}`);
   }
 }
 
 function messagePartFromPojo(obj: MessagePartPojo, placeholdersMap: M.PlaceHoldersMap): M.ConcreteMessagePart {
-  var stableTypeName = obj.$type;
-  switch (stableTypeName) {
-    case M.TYPENAME_TEXT_PART:
-        return textPartFromPojo(<TextPartPojo>obj);
-    case TYPENAME_PLACEHOLDER_BY_NAME:
-        return placeholderFromNamePojo(<PlaceholderNamePojo>obj, placeholdersMap);
-    case M.TYPENAME_HTML_TAG_PAIR:
-        return htmlTagPairFromPojo(<HtmlTagPairPojo>obj, placeholdersMap);
-    default:
-        throw Error(`Error: Don't know how to de-serialize type ${stableTypeName}`);
+  if (typeof obj === 'string') {
+    return textPartFromPojo(obj);
+  } else if (obj instanceof Array) {
+    return placeholderFromNamePojo(<PlaceholderNamePojo>obj, placeholdersMap);
+  } else {
+    assert((<HtmlTagPairPojo>obj).$type === M.TYPENAME_HTML_TAG_PAIR);
+    return htmlTagPairFromPojo(<HtmlTagPairPojo>obj, placeholdersMap);
   }
 }
 
 function placeholderToNamePojo(obj: M.ConcretePlaceholder): PlaceholderNamePojo {
-  return {
-    $type: TYPENAME_PLACEHOLDER_BY_NAME,
-    name: obj.name
-  };
+  return [obj.name];
 }
 
 function placeholderFromNamePojo(obj: PlaceholderNamePojo, placeholdersMap: M.PlaceHoldersMap): M.ConcretePlaceholder {
-  assert(placeholdersMap.has(obj.name));
-  return placeholdersMap.get(obj.name);
+  var name = obj[0];
+  assert(placeholdersMap.has(name));
+  return placeholdersMap.get(name);
 }
 
 function messagePartsFromPojo(pojos: MessagePartPojo[], placeholdersMap: M.PlaceHoldersMap): M.ConcreteMessagePart[] {
