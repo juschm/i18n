@@ -1,31 +1,4 @@
 #!/usr/bin/env node
-
 "use strict";
 
-var assert = require("assert"),
-    fs = require("fs"),
-    parseHtml = require("../lib/parse_html.js").parseHtml,
-    parseMessages = require("../lib/parse_messages.js").parseMessages;
-
-
-function extractMessagesFromHtmlFile(fname) {
-  var html = fs.readFileSync(fname, {encoding: "utf-8"});
-  var node = parseHtml(html);
-  return parseMessages(node);
-}
-
-
-
-function main() {
-  var args = process.argv.slice(2);
-  if (args.length === 0) {
-      args = ["demo/index.html"];
-  }
-
-  args.forEach(function(htmlSrcFileName) {
-    var messagesMap = extractMessagesFromHtmlFile(htmlSrcFileName);
-    console.log("%j", messagesMap);
-  });
-}
-
-main();
+require("../lib/extractMessages").default();

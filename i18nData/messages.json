@@ -1,0 +1,345 @@
+[
+{
+    "$type": "Message",
+    "id": "4c6c4a5ec875e2ef9ca90a3df731f944e065fe37",
+    "meaning": null,
+    "comment": "Document title",
+    "parts": [
+        {
+            "$type": "TextPart",
+            "value": "Angular i18n Demo"
+        }
+    ],
+    "placeholdersMap": {}
+},
+{
+    "$type": "Message",
+    "id": "e534839ea9677f48a69a737ac04995338f65b76e",
+    "meaning": "firstname",
+    "comment": "Greet the user",
+    "parts": [
+        {
+            "$type": "TextPart",
+            "value": "Hello "
+        },
+        {
+            "$type": "Placeholder",
+            "name": "EXPRESSION"
+        }
+    ],
+    "placeholdersMap": {
+        "EXPRESSION": {
+            "$type": "NgExpr",
+            "name": "EXPRESSION",
+            "text": "user",
+            "examples": null,
+            "comment": "Angular Expression"
+        }
+    }
+},
+{
+    "$type": "Message",
+    "id": "8310b5f5f2f4e46779366805d2d9b824b314a5e3",
+    "meaning": "firstname",
+    "comment": "Input placeholder for user's name",
+    "parts": [
+        {
+            "$type": "TextPart",
+            "value": "Enter your name"
+        }
+    ],
+    "placeholdersMap": {}
+},
+{
+    "$type": "Message",
+    "id": "735232eece560a4bb63c6ed64cc5ab55d355277b",
+    "meaning": null,
+    "comment": "block with EMBEDDED SPANs",
+    "parts": [
+        {
+            "$type": "TextPart",
+            "value": "\n    Hello "
+        },
+        {
+            "$type": "Placeholder",
+            "name": "EXPRESSION"
+        },
+        {
+            "$type": "TextPart",
+            "value": " "
+        },
+        {
+            "$type": "HtmlTagPair",
+            "tag": "span",
+            "begin": "<span>",
+            "end": "</span>",
+            "parts": [
+                {
+                    "$type": "TextPart",
+                    "value": "First span contains "
+                },
+                {
+                    "$type": "HtmlTagPair",
+                    "tag": "span",
+                    "begin": "<span class=\"inner span\">",
+                    "end": "</span>",
+                    "parts": [
+                        {
+                            "$type": "TextPart",
+                            "value": "a second span"
+                        }
+                    ],
+                    "examples": null,
+                    "tagFingerprintLong": "TAG_span_1",
+                    "beginPlaceholderRef": {
+                        "$type": "Placeholder",
+                        "name": "SPAN_BEGIN"
+                    },
+                    "endPlaceholderRef": {
+                        "$type": "Placeholder",
+                        "name": "SPAN_END"
+                    }
+                },
+                {
+                    "$type": "TextPart",
+                    "value": " inside it"
+                }
+            ],
+            "examples": null,
+            "tagFingerprintLong": "TAG_span_2",
+            "beginPlaceholderRef": {
+                "$type": "Placeholder",
+                "name": "SPAN_BEGIN_1"
+            },
+            "endPlaceholderRef": {
+                "$type": "Placeholder",
+                "name": "SPAN_END_1"
+            }
+        },
+        {
+            "$type": "TextPart",
+            "value": " your world!\n  "
+        }
+    ],
+    "placeholdersMap": {
+        "EXPRESSION": {
+            "$type": "NgExpr",
+            "name": "EXPRESSION",
+            "text": "user",
+            "examples": null,
+            "comment": "Angular Expression"
+        },
+        "SPAN_BEGIN": {
+            "$type": "TagPairBegin",
+            "name": "SPAN_BEGIN",
+            "text": "<span class=\"inner span\">",
+            "examples": [
+                "<span class=\"inner span\">"
+            ],
+            "comment": "Begin HTML <span> tag"
+        },
+        "SPAN_END": {
+            "$type": "TagPairEnd",
+            "name": "SPAN_END",
+            "text": "</span>",
+            "examples": [
+                "</span>"
+            ],
+            "comment": "End HTML </span> tag"
+        },
+        "SPAN_BEGIN_1": {
+            "$type": "TagPairBegin",
+            "name": "SPAN_BEGIN_1",
+            "text": "<span>",
+            "examples": [
+                "<span>"
+            ],
+            "comment": "Begin HTML <span> tag"
+        },
+        "SPAN_END_1": {
+            "$type": "TagPairEnd",
+            "name": "SPAN_END_1",
+            "text": "</span>",
+            "examples": [
+                "</span>"
+            ],
+            "comment": "End HTML </span> tag"
+        }
+    }
+},
+{
+    "$type": "Message",
+    "id": "df5ab8ab994b8d820208ac4b3010d345031444a0",
+    "meaning": null,
+    "comment": "block with TEST html",
+    "parts": [
+        {
+            "$type": "TextPart",
+            "value": "\n    TEST "
+        },
+        {
+            "$type": "Placeholder",
+            "name": "NAME"
+        },
+        {
+            "$type": "Placeholder",
+            "name": "NAME"
+        },
+        {
+            "$type": "TextPart",
+            "value": " "
+        },
+        {
+            "$type": "HtmlTagPair",
+            "tag": "span",
+            "begin": "<span>",
+            "end": "</span>",
+            "parts": [
+                {
+                    "$type": "TextPart",
+                    "value": "and"
+                }
+            ],
+            "examples": null,
+            "tagFingerprintLong": "TAG_span_1",
+            "beginPlaceholderRef": {
+                "$type": "Placeholder",
+                "name": "SPAN_BEGIN"
+            },
+            "endPlaceholderRef": {
+                "$type": "Placeholder",
+                "name": "SPAN_END"
+            }
+        },
+        {
+            "$type": "TextPart",
+            "value": " your "
+        },
+        {
+            "$type": "Placeholder",
+            "name": "NAME"
+        },
+        {
+            "$type": "TextPart",
+            "value": " world!\n  "
+        }
+    ],
+    "placeholdersMap": {
+        "NAME": {
+            "$type": "NgExpr",
+            "name": "NAME",
+            "text": "user",
+            "examples": [
+                "chirayu"
+            ],
+            "comment": "Angular Expression"
+        },
+        "SPAN_BEGIN": {
+            "$type": "TagPairBegin",
+            "name": "SPAN_BEGIN",
+            "text": "<span>",
+            "examples": [
+                "<span>"
+            ],
+            "comment": "Begin HTML <span> tag"
+        },
+        "SPAN_END": {
+            "$type": "TagPairEnd",
+            "name": "SPAN_END",
+            "text": "</span>",
+            "examples": [
+                "</span>"
+            ],
+            "comment": "End HTML </span> tag"
+        }
+    }
+},
+{
+    "$type": "Message",
+    "id": "f5809a5335d6f1ed1e7d11a845115c37768a2761",
+    "meaning": "greeting",
+    "comment": "Greet the user",
+    "parts": [
+        {
+            "$type": "TextPart",
+            "value": "Hello "
+        },
+        {
+            "$type": "HtmlTagPair",
+            "tag": "b",
+            "begin": "<b>",
+            "end": "</b>",
+            "parts": [
+                {
+                    "$type": "Placeholder",
+                    "name": "EXPRESSION"
+                }
+            ],
+            "examples": null,
+            "tagFingerprintLong": "TAG_b_1",
+            "beginPlaceholderRef": {
+                "$type": "Placeholder",
+                "name": "BOLD_TEXT_BEGIN"
+            },
+            "endPlaceholderRef": {
+                "$type": "Placeholder",
+                "name": "BOLD_TEXT_END"
+            }
+        }
+    ],
+    "placeholdersMap": {
+        "EXPRESSION": {
+            "$type": "NgExpr",
+            "name": "EXPRESSION",
+            "text": "user",
+            "examples": null,
+            "comment": "Angular Expression"
+        },
+        "BOLD_TEXT_BEGIN": {
+            "$type": "TagPairBegin",
+            "name": "BOLD_TEXT_BEGIN",
+            "text": "<b>",
+            "examples": [
+                "<b>"
+            ],
+            "comment": "Begin HTML <b> tag"
+        },
+        "BOLD_TEXT_END": {
+            "$type": "TagPairEnd",
+            "name": "BOLD_TEXT_END",
+            "text": "</b>",
+            "examples": [
+                "</b>"
+            ],
+            "comment": "End HTML </b> tag"
+        }
+    }
+},
+{
+    "$type": "Message",
+    "id": "59497c1ba8e010736b07b262b93a7eff05e91a25",
+    "meaning": "firstname",
+    "comment": "Input placeholder for user's name",
+    "parts": [
+        {
+            "$type": "TextPart",
+            "value": "Enter your name, "
+        },
+        {
+            "$type": "Placeholder",
+            "name": "USERNAME"
+        }
+    ],
+    "placeholdersMap": {
+        "USERNAME": {
+            "$type": "NgExpr",
+            "name": "USERNAME",
+            "text": "user",
+            "examples": [
+                "Alice"
+            ],
+            "comment": "Angular Expression"
+        }
+    }
+}
+]

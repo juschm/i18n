@@ -4,7 +4,7 @@ require('source-map-support').install();
 
 var ckckStringify = require('./../ckckStringify');
 
-import {loadAppConfig} from './config';
+import {AppConfig, loadAppConfig} from './config';
 import {Message} from './message_types';
 import SerializerRegistry from './serializer';
 
@@ -13,46 +13,73 @@ var assert = require("assert"),
     parseHtml = require("./parse_html").parseHtml,
     parseMessages = require("./parse_messages").parseMessages;
 
-function main() {
-  var config = loadAppConfig();
-  for (let src of config.htmlSrcs) {
-    var html:string = fs.readFileSync(src, {encoding: "utf-8"});
-    // assertValidHtml(html);
-    var rootNode = parseHtml(html);
-    var messages:Map<string, Message> = parseMessages(rootNode);
 
-    var logStringify = 0;
-    var logPojo = 0;
-    var logDumpParse = 1;
+export class Extractor {
+  constructor(public config: AppConfig) {}
 
-    if (logStringify) {
-      console.log(ckckStringify(messages));
-    }
+  writeMessagesToJson(messages) {
+    var dst = this.config.dataDir + "/messages.json";
+    console.log(`Writing JSON to file: ${dst}`);
+    var jsonSerializer = SerializerRegistry.create('json');
+    // TODO: jsonSerializer should be able to deal with a collection of messages.
+    var jsonItems = [];
+    messages.forEach(function(value) {
+      jsonItems.push(jsonSerializer.stringify(value));
+    });
+    var jsonText = `[\n${jsonItems.join(",\n")}\n]`;
+    fs.writeFileSync(dst, jsonText, {encoding: "utf-8"});
+  }
 
-    if (logPojo) {
-      var jsonSerializer = SerializerRegistry.create('json');
-      messages.forEach(function(value) {
-        console.log(jsonSerializer.stringify(value));
+  run() {
+    var allMessages = [];
+    for (let src of this.config.htmlSrcs) {
+      console.log(`Processing file: ${src}`);
+      var html:string = fs.readFileSync(src, {encoding: "utf-8"});
+      // assertValidHtml(html);
+      parseMessages(parseHtml(html)).forEach(function(message) {
+        allMessages.push(message);
       });
+      // todo: compare with previous extraction?
+      // todo: what's the database?  where is it?
+      // todo: the same message can be found in multiple source files
+      // todo: what src file should be associated with the message?
     }
+    this.writeMessagesToJson(allMessages);
+  }
 
-    if (logDumpParse) {
-      var jsonSerializer = SerializerRegistry.create('json');
-      messages.forEach(function(value) {
-        console.log("\n\nVALUE: %s\n\n", ckckStringify(value));
-        console.log("\n\nJSON: %s\n\n", jsonSerializer.stringify(value));
-        console.log("\n\nPARSED: %s\n\n", ckckStringify(jsonSerializer.parse(jsonSerializer.stringify(value))));
-        // console.log(jsonSerializer.stringify(jsonSerializer.parse(jsonSerializer.stringify(value))));
-      });
+  debugRun() {
+    for (let src of this.config.htmlSrcs) {
+      var html:string = fs.readFileSync(src, {encoding: "utf-8"});
+      var rootNode = parseHtml(html);
+      var messages:Map<string, Message> = parseMessages(rootNode);
+      var logStringify = 0;
+      var logPojo = 0;
+      var logDumpParse = 1;
+
+      if (logStringify) {
+        console.log(ckckStringify(messages));
+      }
+
+      if (logPojo) {
+        var jsonSerializer = SerializerRegistry.create('json');
+        messages.forEach(function(value) {
+          console.log(jsonSerializer.stringify(value));
+        });
+      }
+
+      if (logDumpParse) {
+        var jsonSerializer = SerializerRegistry.create('json');
+        messages.forEach(function(value) {
+          console.log("\n\nVALUE: %s\n\n", ckckStringify(value));
+          console.log("\n\nJSON: %s\n\n", jsonSerializer.stringify(value));
+          console.log("\n\nPARSED: %s\n\n", ckckStringify(jsonSerializer.parse(jsonSerializer.stringify(value))));
+        });
+      }
     }
-
-    // writeMessagesToJson(messages);
-
-    // todo: compare with previous extraction?
-    // todo: what's the database?  where is it?
-    // todo: the same message can be found in multiple source files
-    // todo: what src file should be associated with the message?
   }
 }
 
-main();
+export default function main() {
+  console.log("Using default application config (i18n.json)");
+  new Extractor(loadAppConfig()).run();
+}

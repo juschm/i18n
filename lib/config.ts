@@ -8,6 +8,7 @@ registerJsonSerializer();
 
 export class AppConfig {
   htmlSrcs: string[];
+  dataDir: string; // where extracted messages, etc. are stored.
   // serializers: TODO
   // locales: [],
   // pseudoLocales: [],
@@ -30,10 +31,16 @@ export class AppConfig {
 
 const DEFAULT_CONFIG_FNAME = "i18n.json";
 
+var defaultValues = new AppConfig();
+defaultValues.dataDir = "i18nData";
+
 export function loadConfigFromFile(fname): AppConfig {
   var jsonText = fs.readFileSync(fname, {encoding: "utf-8"});
   var config = JSON.parse(jsonText);
   assert(config.htmlSrcs !== void 0);
+  if (config.dataDir === void 0) {
+    config.dataDir = defaultValues.dataDir;
+  }
   return config;
 }
 
