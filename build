@@ -15,6 +15,6 @@ export -f babeljs
 
 # Build everything in parallel.
 {
-  find lib -name '*.ts'  -exec printf 'typescript_to_js %s\000' '{}' ';'
+  find lib -name '*.ts' -a '!' -name '*.d.ts'  -exec printf 'typescript_to_js %s\000' '{}' ';'
   find lib -name '*.es6' -exec printf 'babeljs %s\000' '{}' ';'
 } | xargs -0 -n 1 -P $NUM_PARALLEL_PROCESSES bash -c
