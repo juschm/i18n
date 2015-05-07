@@ -1,46 +1,48 @@
-
-
-rule typescript_to_js
-  description = typescript_to_js: $in → $out
-  depfile = $in.depfile
-  command = ck typescript_write_depfile --depfile $depfile $in && tsc --noEmitOnError --module amd -d --sourceMap --out $out_js $in
-
-
 rule typescript_to_nodejs
   depfile = $in.depfile
   description = typescript_to_nodejs: $in → $out (DEPFILE=$depfile)
-  command = ck typescript_write_depfile --depfile $depfile $in && tsc --noEmitOnError --module commonjs -d --sourceMap $in
+  command = ck typescript_to_nodejs --tsc_home ./node_modules/typescript --depfile $depfile --in $in
 
 rule babeljs
   description = babel: $in → $out
-  command = babel --optional runtime --source-maps --stage 0 --out-file $out $in
+  command = babel --optional runtime --source-maps --stage 0 --out-file $out_js $in
 
-
-
-build lib/hashing.js lib/hashing.d.ts: typescript_to_nodejs lib/hashing.ts
-build lib/quoting.js lib/quoting.d.ts: typescript_to_nodejs lib/quoting.ts
-build lib/stringUtils.js lib/stringUtils.d.ts: typescript_to_nodejs $
-    lib/stringUtils.ts
-build lib/newSet.js lib/newSet.d.ts: typescript_to_nodejs lib/newSet.ts
-build lib/serializers/json.js lib/serializers/json.d.ts: $
-    typescript_to_nodejs lib/serializers/json.ts
-build lib/serializer.js lib/serializer.d.ts: typescript_to_nodejs $
-    lib/serializer.ts
-build lib/message_types.js lib/message_types.d.ts: typescript_to_nodejs $
-    lib/message_types.ts
-build lib/config.js lib/config.d.ts: typescript_to_nodejs lib/config.ts
-build lib/LoadingCache.js lib/LoadingCache.d.ts: typescript_to_nodejs $
-    lib/LoadingCache.ts
-build lib/extractMessages.js lib/extractMessages.d.ts: typescript_to_nodejs $
-    lib/extractMessages.ts
-build lib/Counter.js lib/Counter.d.ts: typescript_to_nodejs lib/Counter.ts
-build lib/fingerprinting.js: babeljs lib/fingerprinting.es6
-build lib/parse_html.js: babeljs lib/parse_html.es6
-build lib/parse_messages.js: babeljs lib/parse_messages.es6
-build lib/placeholderRegistry.js: babeljs lib/placeholderRegistry.es6
-build lib/placeholderRegistryHints.js: babeljs $
-    lib/placeholderRegistryHints.es6
-
+build lib/hashing.js lib/hashing.d.ts lib/hashing.js.map: $
+    typescript_to_nodejs lib/hashing.ts
+build lib/quoting.js lib/quoting.d.ts lib/quoting.js.map: $
+    typescript_to_nodejs lib/quoting.ts
+build lib/stringUtils.js lib/stringUtils.d.ts lib/stringUtils.js.map: $
+    typescript_to_nodejs lib/stringUtils.ts
+build lib/newSet.js lib/newSet.d.ts lib/newSet.js.map: typescript_to_nodejs $
+    lib/newSet.ts
+build lib/serializers/json.js lib/serializers/json.d.ts $
+    lib/serializers/json.js.map: typescript_to_nodejs lib/serializers/json.ts
+build lib/serializer.js lib/serializer.d.ts lib/serializer.js.map: $
+    typescript_to_nodejs lib/serializer.ts
+build lib/message_types.js lib/message_types.d.ts lib/message_types.js.map: $
+    typescript_to_nodejs lib/message_types.ts
+build lib/config.js lib/config.d.ts lib/config.js.map: typescript_to_nodejs $
+    lib/config.ts
+build lib/LoadingCache.js lib/LoadingCache.d.ts lib/LoadingCache.js.map: $
+    typescript_to_nodejs lib/LoadingCache.ts
+build lib/extractMessages.js lib/extractMessages.d.ts $
+    lib/extractMessages.js.map: typescript_to_nodejs lib/extractMessages.ts
+build lib/Counter.js lib/Counter.d.ts lib/Counter.js.map: $
+    typescript_to_nodejs lib/Counter.ts
+build lib/fingerprinting.js lib/fingerprinting.js.map: babeljs $
+    lib/fingerprinting.es6
+  out_js = lib/fingerprinting.js
+build lib/parse_html.js lib/parse_html.js.map: babeljs lib/parse_html.es6
+  out_js = lib/parse_html.js
+build lib/parse_messages.js lib/parse_messages.js.map: babeljs $
+    lib/parse_messages.es6
+  out_js = lib/parse_messages.js
+build lib/placeholderRegistry.js lib/placeholderRegistry.js.map: babeljs $
+    lib/placeholderRegistry.es6
+  out_js = lib/placeholderRegistry.js
+build lib/placeholderRegistryHints.js lib/placeholderRegistryHints.js.map: $
+    babeljs lib/placeholderRegistryHints.es6
+  out_js = lib/placeholderRegistryHints.js
 
 rule build_ninja_file
   description = Building build.ninja
