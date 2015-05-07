@@ -1,3 +1,4 @@
+/// <reference path="collections.d.ts" />
 export declare type AbstractMessagePart = TextPart | Placeholder | TagPair;
 export declare type ConcretePlaceholder = NgExpr | TagPairBeginRef | TagPairEndRef;
 export declare type ConcreteTagPair = HtmlTagPair;

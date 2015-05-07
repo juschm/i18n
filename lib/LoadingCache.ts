@@ -1,3 +1,5 @@
+///<reference path="collections.d.ts" />
+
 /**
  * Based on Guava's LoadCache<K, V>.
  *

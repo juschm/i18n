@@ -6,12 +6,6 @@ for ts_lib in "hashing quoting stringUtils newSet serializers/json serializer me
       srcs=["lib/{0}.ts".format(ts_lib)])
 
 for es6_lib in "fingerprinting parse_html parse_messages placeholderRegistry placeholderRegistryHints".split():
-# for es6_lib in "Counter LoadingCache parse_html parse_messages".split():
-  # traceur(
   babeljs(
       name="lib/{0}".format(es6_lib),
       srcs=["lib/{0}.es6".format(es6_lib)])
-
-# babeljs(
-#     name="/tmp/ckck",
-#     srcs=["/tmp/ckck.es6"])

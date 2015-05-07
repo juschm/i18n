@@ -1,3 +1,4 @@
+/// <reference path="collections.d.ts" />
 /// <reference path="../typings/node/node.d.ts" />
 export interface Hasher {
     update(data: any): any;

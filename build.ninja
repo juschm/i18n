@@ -1,16 +1,15 @@
 
 
-TYPESCRIPT_TARGET_LANG=ES5
-
 rule typescript_to_js
   description = typescript_to_js: $in → $out
-  depfile = $in.d
-  command = ck typescript_write_depfile --depfile $in.d $in && tsc --target $TYPESCRIPT_TARGET_LANG -d --sourceMap --out $out_js $in
+  depfile = $in.depfile
+  command = ck typescript_write_depfile --depfile $depfile $in && tsc --noEmitOnError --module amd -d --sourceMap --out $out_js $in
 
 
 rule typescript_to_nodejs
-  description = typescript_to_nodejs: $in → $out
-  command = tsc --target $TYPESCRIPT_TARGET_LANG --module commonjs -d --sourceMap $in
+  depfile = $in.depfile
+  description = typescript_to_nodejs: $in → $out (DEPFILE=$depfile)
+  command = ck typescript_write_depfile --depfile $depfile $in && tsc --noEmitOnError --module commonjs -d --sourceMap $in
 
 rule babeljs
   description = babel: $in → $out
@@ -18,33 +17,23 @@ rule babeljs
 
 
 
+build lib/hashing.js lib/hashing.d.ts: typescript_to_nodejs lib/hashing.ts
+build lib/quoting.js lib/quoting.d.ts: typescript_to_nodejs lib/quoting.ts
+build lib/stringUtils.js lib/stringUtils.d.ts: typescript_to_nodejs $
+    lib/stringUtils.ts
 build lib/newSet.js lib/newSet.d.ts: typescript_to_nodejs lib/newSet.ts
-  TYPESCRIPT_TARGET_LANG = ES5
 build lib/serializers/json.js lib/serializers/json.d.ts: $
     typescript_to_nodejs lib/serializers/json.ts
-  TYPESCRIPT_TARGET_LANG = ES5
 build lib/serializer.js lib/serializer.d.ts: typescript_to_nodejs $
     lib/serializer.ts
-  TYPESCRIPT_TARGET_LANG = ES5
 build lib/message_types.js lib/message_types.d.ts: typescript_to_nodejs $
     lib/message_types.ts
-  TYPESCRIPT_TARGET_LANG = ES5
 build lib/config.js lib/config.d.ts: typescript_to_nodejs lib/config.ts
-  TYPESCRIPT_TARGET_LANG = ES5
 build lib/LoadingCache.js lib/LoadingCache.d.ts: typescript_to_nodejs $
     lib/LoadingCache.ts
-  TYPESCRIPT_TARGET_LANG = ES5
 build lib/extractMessages.js lib/extractMessages.d.ts: typescript_to_nodejs $
     lib/extractMessages.ts
-  TYPESCRIPT_TARGET_LANG = ES5
 build lib/Counter.js lib/Counter.d.ts: typescript_to_nodejs lib/Counter.ts
-  TYPESCRIPT_TARGET_LANG = ES5
-build lib/stringUtils.js lib/stringUtils.d.ts: typescript_to_nodejs lib/stringUtils.ts
-  TYPESCRIPT_TARGET_LANG = ES5
-build lib/quoting.js lib/quoting.d.ts: typescript_to_nodejs lib/quoting.ts
-  TYPESCRIPT_TARGET_LANG = ES5
-build lib/hashing.js lib/hashing.d.ts: typescript_to_nodejs lib/hashing.ts
-  TYPESCRIPT_TARGET_LANG = ES5
 build lib/fingerprinting.js: babeljs lib/fingerprinting.es6
 build lib/parse_html.js: babeljs lib/parse_html.es6
 build lib/parse_messages.js: babeljs lib/parse_messages.es6
@@ -53,18 +42,18 @@ build lib/placeholderRegistryHints.js: babeljs $
     lib/placeholderRegistryHints.es6
 
 
-# rule build_ninja_file
-#   description = Building build.ninja
-#   deps = gcc
-#   depfile = build.ninja.d
-#   command = echo $$'build.ninja:  $
-#     /Users/chirayu/ck/ck5/python/ck/ckbuild/prologue.jinja $
-#     /Users/chirayu/ck/ck5/python/ck/ckbuild/epilogue.jinja $
-#     /Users/chirayu/ck/ck5/python/ck/ckbuild/ninja_base.jinja $
-#     /Users/chirayu/ck/ck5/python/ck/ckbuild/__init__.py $
-#     /Users/chirayu/ck/ck5/python/ck/ckbuild/__main__.py $
-#     /Users/chirayu/ck/ck5/python/ck/ckbuild/ninja_syntax.py $
-#     /Users/chirayu/ck/ck5/python/ck/ckbuild/rules.py' > build.ninja.d && ck build_ninja_from_ckb --ninja_fname=build.ninja $in
-#   generator = 1
-# 
-# build build.ninja: build_ninja_file build.ckb
+rule build_ninja_file
+  description = Building build.ninja
+  deps = gcc
+  depfile = build.ninja.d
+  command = echo $$'build.ninja:  $
+    /Users/chirayu/ck/ck5/python/ck/ckbuild/prologue.jinja $
+    /Users/chirayu/ck/ck5/python/ck/ckbuild/epilogue.jinja $
+    /Users/chirayu/ck/ck5/python/ck/ckbuild/ninja_base.jinja $
+    /Users/chirayu/ck/ck5/python/ck/ckbuild/__init__.py $
+    /Users/chirayu/ck/ck5/python/ck/ckbuild/__main__.py $
+    /Users/chirayu/ck/ck5/python/ck/ckbuild/ninja_syntax.py $
+    /Users/chirayu/ck/ck5/python/ck/ckbuild/rules.py' > build.ninja.d && ck build_ninja_from_ckb --ninja_fname=build.ninja $in
+  generator = 1
+
+build build.ninja: build_ninja_file build.ckb

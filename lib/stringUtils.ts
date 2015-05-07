@@ -1,3 +1,4 @@
+///<reference path='collections.d.ts'/>
 ///<reference path='../typings/node/node.d.ts'/>
 import * as assert from 'assert';
 
