@@ -1,31 +1,20 @@
 #!/bin/bash
-
 set -e -o pipefail
 
-if which ninja ; then
-  ninja
-  exit $?
-fi
+NUM_PARALLEL_PROCESSES=6
 
 typescript_to_js() {
-  set -x
-  tsc --target ES5 --module commonjs -d --sourceMap "$1"
-  set +x
+  set -x ; ./node_modules/.bin/tsc --target ES5 --module commonjs -d --sourceMap "$1"
 }
+export -f typescript_to_js
 
 babeljs() {
-  set -x
-  babel --optional runtime --source-maps --stage 0 --out-file "$2" "$1"
-  set +x
+  set -x ; ./node_modules/.bin/babel --optional runtime --source-maps --stage 0 --out-file "${1/%.es6/.js}" "$1"
 }
+export -f babeljs
 
-build_all() {
-  for f in hashing quoting stringUtils newSet serializers/json serializer message_types config LoadingCache extractMessages Counter ; do
-    typescript_to_js "lib/$f.ts"
-  done
-  for f in fingerprinting parse_html parse_messages placeholderRegistry placeholderRegistryHints ; do
-    babeljs "lib/$f.es6" "lib/$f.js"
-  done
-}
-
-build_all
+# Build everything in parallel.
+{
+  find lib -name '*.ts'  -exec printf 'typescript_to_js %s\000' '{}' ';'
+  find lib -name '*.es6' -exec printf 'babeljs %s\000' '{}' ';'
+} | xargs -0 -n 1 -P $NUM_PARALLEL_PROCESSES bash -c
