@@ -1,8 +1,7 @@
 import * as M from './message_types';
+import {getNameHintForHtmlTag} from './placeholderRegistryHintsForHtmlTags';
 
-var getNameHintForHtmlTag = require("./placeholderRegistryHintsForHtmlTags").default;
-
-export function getNameHintForPlaceholder(placeholder) {
+export function getNameHintForPlaceholder(placeholder: M.ConcreteTagPair): string {
   if (placeholder instanceof M.TagPair) {
     var typeName = M.getStableTypeName(placeholder);
     switch (typeName) {

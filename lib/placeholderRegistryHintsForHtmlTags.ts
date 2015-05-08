@@ -42,8 +42,10 @@ const HTML_TAG_TO_PLACEHOLDER_NAME_HINTS: Map<string, string> = new (<any>Map)([
   ['UL', 'UNORDERED_LIST']
 ]);
 
-export default function getNameHintForHtmlTag(tag: string) {
+export function getNameHintForHtmlTag(tag: string): string {
   var ucaseTag = tag.toUpperCase();
   var hint = HTML_TAG_TO_PLACEHOLDER_NAME_HINTS.get(ucaseTag);
   return hint === void 0 ? ucaseTag : hint;
 }
+
+export { getNameHintForHtmlTag as default };

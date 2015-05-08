@@ -1,11 +1,11 @@
 # -*- mode: python; -*- vim: set filetype=python:
 
-for ts_lib in "hashing quoting stringUtils newSet serializers/json serializer message_types config LoadingCache extractMessages Counter placeholderRegistryHintsForHtmlTags".split():
+for ts_lib in "hashing quoting stringUtils newSet serializers/json serializer message_types config LoadingCache extractMessages Counter placeholderRegistryHintsForHtmlTags placeholderRegistryHints".split():
   typescript_to_nodejs(
       name="lib/{0}".format(ts_lib),
       srcs=["lib/{0}.ts".format(ts_lib)])
 
-for es6_lib in "fingerprinting parse_html parse_messages placeholderRegistry placeholderRegistryHints".split():
+for es6_lib in "fingerprinting parse_html parse_messages placeholderRegistry".split():
   babeljs(
       name="lib/{0}".format(es6_lib),
       srcs=["lib/{0}.es6".format(es6_lib)])
