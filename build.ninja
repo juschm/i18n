@@ -29,6 +29,10 @@ build lib/extractMessages.js lib/extractMessages.d.ts $
     lib/extractMessages.js.map: typescript_to_nodejs lib/extractMessages.ts
 build lib/Counter.js lib/Counter.d.ts lib/Counter.js.map: $
     typescript_to_nodejs lib/Counter.ts
+build lib/placeholderRegistryHintsForHtmlTags.js $
+    lib/placeholderRegistryHintsForHtmlTags.d.ts $
+    lib/placeholderRegistryHintsForHtmlTags.js.map: typescript_to_nodejs $
+    lib/placeholderRegistryHintsForHtmlTags.ts
 build lib/fingerprinting.js lib/fingerprinting.js.map: babeljs $
     lib/fingerprinting.es6
   out_js = lib/fingerprinting.js

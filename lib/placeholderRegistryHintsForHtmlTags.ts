@@ -1,6 +1,15 @@
-"use strict";
-
-var HTML_TAG_TO_PLACEHOLDER_NAME_HINTS = new Map([
+// Work around ES6 Set constructor limitation in TypeScript 1.5.0-beta.
+//
+// In TypeScript 1.5.0-beta when using lib.es6.d.ts shipped with the compiler, the following line,
+//
+//     var m = new Map<string, string>([ ["a", "1"], ["b", "2"] ]);
+//
+// result in the following error.
+//
+//     TS2345: Argument of type 'string[][]' is not assignable to parameter of type 'Iterable<[{}, {}]>'.
+//
+// The cast of the Map constructor to <any> below is used to workaround this behavior.
+const HTML_TAG_TO_PLACEHOLDER_NAME_HINTS: Map<string, string> = new (<any>Map)([
   ['A', 'LINK'],
   ['B', 'BOLD_TEXT'],
   ['BR', 'LINE_BREAK'],
@@ -33,10 +42,8 @@ var HTML_TAG_TO_PLACEHOLDER_NAME_HINTS = new Map([
   ['UL', 'UNORDERED_LIST']
 ]);
 
-function getNameHintForHtmlTag(tag) {
+export default function getNameHintForHtmlTag(tag: string) {
   var ucaseTag = tag.toUpperCase();
   var hint = HTML_TAG_TO_PLACEHOLDER_NAME_HINTS.get(ucaseTag);
   return hint === void 0 ? ucaseTag : hint;
 }
-
-exports.getNameHintForHtmlTag = getNameHintForHtmlTag;

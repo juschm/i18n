@@ -1,6 +1,6 @@
 import * as M from './message_types';
 
-var getNameHintForHtmlTag = require("./placeholderRegistryHintsForHtmlTags").getNameHintForHtmlTag;
+var getNameHintForHtmlTag = require("./placeholderRegistryHintsForHtmlTags").default;
 
 export function getNameHintForPlaceholder(placeholder) {
   if (placeholder instanceof M.TagPair) {
