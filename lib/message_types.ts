@@ -1,5 +1,3 @@
-///<reference path="collections.d.ts" />
-
 /**
  * Message Types Reference
  *

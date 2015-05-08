@@ -4,7 +4,7 @@ set -e -o pipefail
 NUM_PARALLEL_PROCESSES=6
 
 typescript_to_js() {
-  set -x ; ./node_modules/.bin/tsc --noEmitOnError --target ES5 --module commonjs -d --sourceMap "$1"
+  set -x ; ./node_modules/.bin/tsc --noEmitOnError --target ES5 --module commonjs -d --sourceMap --noLib ./node_modules/typescript/bin/lib.es6.d.ts "$1"
 }
 export -f typescript_to_js
 

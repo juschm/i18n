@@ -1,5 +1,3 @@
-///<reference path="collections.d.ts" />
-
 // Work around ES6 Set constructor limitation in TypeScript 1.5
 //
 // In TypeScript 1.5, the following line,
