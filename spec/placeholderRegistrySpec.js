@@ -3,7 +3,7 @@
 require('source-map-support').install();
 
 var message_types = require("../lib/message_types");
-var PlaceholderRegistry = require("../lib/placeholderRegistry");
+var PlaceholderRegistry = require("../lib/placeholderRegistry").default;
 var assert = require("assert");
 
 
@@ -56,6 +56,11 @@ beforeEach(function() {
 
 
 describe("PlaceholderRegistry", function() {
+  describe("assumptions", function() {
+    expect(true + true).toBe(2);
+    expect(false + false).toBe(0);
+  });
+
   describe("constructor", function() {
     it("ckck", function() {
       var registry = new PlaceholderRegistry();

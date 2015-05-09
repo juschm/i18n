@@ -40,12 +40,12 @@ build lib/placeholderRegistryHintsForHtmlTags.js $
 build lib/placeholderRegistryHints.js lib/placeholderRegistryHints.d.ts $
     lib/placeholderRegistryHints.js.map: typescript_to_nodejs $
     lib/placeholderRegistryHints.ts
+build lib/placeholderRegistry.js lib/placeholderRegistry.d.ts $
+    lib/placeholderRegistry.js.map: typescript_to_nodejs $
+    lib/placeholderRegistry.ts
 build lib/fingerprinting.js lib/fingerprinting.js.map: babeljs $
     lib/fingerprinting.es6
   out_js = lib/fingerprinting.js
-build lib/placeholderRegistry.js lib/placeholderRegistry.js.map: babeljs $
-    lib/placeholderRegistry.es6
-  out_js = lib/placeholderRegistry.js
 
 rule build_ninja_file
   description = Building build.ninja

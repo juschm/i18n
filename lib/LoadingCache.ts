@@ -9,7 +9,7 @@ export interface Loader<K, V> {
   (key:K): V;
 }
 
-export class LoadingCache<K, V> {
+export default class LoadingCache<K, V> {
   private _loader:Loader<K, V>;
   private _map:Map<K, V>;
 
@@ -31,6 +31,3 @@ export class LoadingCache<K, V> {
     return this._map;
   }
 }
-
-// Support importing from babeljs transpiled files.
-export var __esModule = true;

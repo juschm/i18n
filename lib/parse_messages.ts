@@ -1,6 +1,3 @@
-// TODO: replace with the correct type after PlaceholderRegistry.es6 → PlaceholderRegistry.ts migration.
-type ckckPlaceholderRegistry = any;
-
 import * as assert from 'assert';
 import * as util from 'util';
 import * as fs from 'fs';
@@ -8,7 +5,7 @@ var S = require('string');
 
 import * as M from './message_types';
 import {adapter as treeAdapter, Node, Attr} from './parse_html';
-var PlaceholderRegistry = require('./PlaceholderRegistry');
+import PlaceholderRegistry from './PlaceholderRegistry';
 import {splitN} from './stringUtils';
 import {quoteHtmlAttribute} from './quoting';
 var computeIdForMessageBuilder = require('./fingerprinting').computeIdForMessageBuilder;
@@ -86,7 +83,7 @@ function parseNgExpression(text: string): M.NgExpr {
 }
 
 var NG_EXPR_RE = /\{\{\s*(.*?)\s*\}\}/;
-function parseMessageTextForNgExpressions(text: string, placeholderRegistry: ckckPlaceholderRegistry) {
+function parseMessageTextForNgExpressions(text: string, placeholderRegistry: PlaceholderRegistry) {
   var parts: M.ConcreteMessagePart[] = [];
   var splits = text.split(NG_EXPR_RE);
   if (splits.length % 2 == 1) {
@@ -130,7 +127,7 @@ function _getHtmlBeginEndTags(node: Node): { begin: string, end: string } {
   return {begin, end};
 }
 
-function _parseNode(node: Node, placeholderRegistry: ckckPlaceholderRegistry): M.ConcreteMessagePart[] {
+function _parseNode(node: Node, placeholderRegistry: PlaceholderRegistry): M.ConcreteMessagePart[] {
   if (treeAdapter.isTextNode(node)) {
     return parseMessageTextForNgExpressions(treeAdapter.getTextNodeContent(node), placeholderRegistry);
   }
@@ -153,7 +150,7 @@ function _parseNode(node: Node, placeholderRegistry: ckckPlaceholderRegistry): M
   return [placeholderRegistry.updatePlaceholder(tagPair)];
 }
 
-function parseNodeContents(root: Node, placeholderRegistry: ckckPlaceholderRegistry): M.ConcreteMessagePart[] {
+function parseNodeContents(root: Node, placeholderRegistry: PlaceholderRegistry): M.ConcreteMessagePart[] {
   var parts: M.ConcreteMessagePart[] = [];
   function extendParts(extra: M.ConcreteMessagePart[]) {
     extra.forEach(value => parts.push(value));
@@ -169,7 +166,7 @@ class MessageBuilder {
   public meaning: string;
   public comment: string;
   public parts: M.ConcreteMessagePart[];
-  public placeholderRegistry: ckckPlaceholderRegistry;
+  public placeholderRegistry: PlaceholderRegistry;
 
   constructor(rawComment: string, rawMessage: Node|string, parent?: MessageBuilder) {
     this.parent = parent;
@@ -220,7 +217,7 @@ function _findAttrib(node: Node, attrName: string): Attr {
 export type MessagesMap = Map<string, M.Message>;
 
 class MessageParser {
-  public nodes: Node[] = [];;
+  public nodes: Node[] = [];
   public messages: MessagesMap = new Map<string, M.Message>();
 
   constructor(public onParse: OnParse) {}

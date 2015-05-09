@@ -1,7 +1,7 @@
 import * as M from './message_types';
 import {getNameHintForHtmlTag} from './placeholderRegistryHintsForHtmlTags';
 
-export function getNameHintForPlaceholder(placeholder: M.ConcreteTagPair): string {
+export function getNameHintForPlaceholder(placeholder: M.ConcreteTagPair|M.ConcretePlaceholder): string {
   if (placeholder instanceof M.TagPair) {
     var typeName = M.getStableTypeName(placeholder);
     switch (typeName) {

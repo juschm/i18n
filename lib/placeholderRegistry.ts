@@ -1,47 +1,47 @@
 import * as M from './message_types';
-import {LoadingCache} from './LoadingCache';
+import LoadingCache from './LoadingCache';
 import Counter from './Counter';
 import {getNameHintForPlaceholder} from './placeholderRegistryHints';
 
-if ((true + true !== 2) || (false + false) !== 0) {
-  throw Error("Internal Error: Please file an issue on GitHub with this stacktrace.");
-}
-
-function toBool(x) {
+function toBool(x: any): boolean {
   return x ? true : false;
 }
 
-export default class PlaceholderRegistry {
-  constructor() {
-    this._namesSeen = new Set();
-    // We require an ordered Map.  ES6 Map's iterate in insertion order (Map.forEach)
-    // so we can simply use Map.
-    // Refer section 23.1.3.5 of the draft spec.
-    // http://people.mozilla.org/~jorendorff/es6-draft.html#sec-map.prototype.foreach
-    this._byFingerprint = new Map();
-    this._countsByPrefix = new LoadingCache(key => new Counter(1));
-    this._counter = new Counter(1);
-  }
+export type ConcretePlaceholderOrTagPair = M.ConcretePlaceholder|M.ConcreteTagPair;
 
-  toMap() {
+export default class PlaceholderRegistry {
+  private _namesSeen = new Set<string>();
+  // We require an ordered Map.  ES6 Map's iterate in insertion order (Map.forEach)
+  // so we can simply use Map.
+  // Refer section 23.1.3.5 of the draft spec.
+  // http://people.mozilla.org/~jorendorff/es6-draft.html#sec-map.prototype.foreach
+  private _byFingerprint = new Map<string, ConcretePlaceholderOrTagPair>();
+  private _countsByPrefix = new LoadingCache<string, Counter>(key => new Counter(1));
+  private _counter = new Counter(1);
+
+  toMap(): M.PlaceHoldersMap {
     var self = this;
-    this._byFingerprint.forEach(placeholderOrTag => self._ensureName(placeholderOrTag));
-    var result = new Map();
-    for (let placeholderOrTag of this._byFingerprint.values()) {
+    this._byFingerprint.forEach((placeholderOrTag) => self._ensureName(placeholderOrTag));
+    var result: M.PlaceHoldersMap = new Map<string, M.ConcretePlaceholder>();
+    var internalError = false;
+    this._byFingerprint.forEach(function (placeholderOrTag) {
       if (placeholderOrTag instanceof M.PlaceholderBase) {
         result.set(placeholderOrTag.name, placeholderOrTag);
       } else if (placeholderOrTag instanceof M.TagPair) {
-        var tag_pair = placeholderOrTag;
+        var tag_pair = <M.TagPair>placeholderOrTag;
         result.set(tag_pair.beginPlaceholderRef.name, tag_pair.beginPlaceholderRef);
         result.set(tag_pair.endPlaceholderRef.name, tag_pair.endPlaceholderRef);
       } else {
-        throw Error('Internal Error');
+        internalError = true;
       }
+    });
+    if (internalError) {
+      throw Error('Internal Error');
     }
     return result;
   }
 
-  _ensureNamesForTag(placeholder) {
+  _ensureNamesForTag(placeholder: M.ConcreteTagPair): void {
     if (placeholder.beginPlaceholderRef.name) {
       return;
     }
@@ -62,7 +62,7 @@ export default class PlaceholderRegistry {
     placeholder.endPlaceholderRef.name = phEndName;
   }
 
-  ensureNameForPlaceholder(placeholder) {
+  ensureNameForPlaceholder(placeholder: M.ConcretePlaceholder): void {
     if (placeholder.name) {
       return;
     }
@@ -76,39 +76,41 @@ export default class PlaceholderRegistry {
     placeholder.name = name;
   }
 
-  _ensureName(placeholder) {
+  _ensureName(placeholder: ConcretePlaceholderOrTagPair) {
     if (placeholder instanceof M.TagPair) {
-      this._ensureNamesForTag(placeholder);
+      this._ensureNamesForTag(<M.ConcreteTagPair>placeholder);
     } else {
-      this.ensureNameForPlaceholder(placeholder);
+      this.ensureNameForPlaceholder(<M.ConcretePlaceholder>placeholder);
     }
   }
 
-  reserveNewTag(tagName) {
+  reserveNewTag(tagName: string): string {
     var canonicalKey = `TAG_${tagName}_${this._counter.next()}`;
     this._byFingerprint.set(canonicalKey, null);
     return canonicalKey;
   }
 
-  updatePlaceholder(placeholder) {
+  updatePlaceholder(placeholder: M.ConcretePlaceholder): M.ConcretePlaceholder;
+  updatePlaceholder(placeholder: M.ConcreteTagPair): M.ConcreteTagPair;
+  updatePlaceholder(placeholder: ConcretePlaceholderOrTagPair): /* ConcretePlaceholderOrTagPair */ any {
     if (placeholder instanceof M.TagPair) {
-      return this._updateTagPlaceholder(placeholder);
+      return this._updateTagPlaceholder(<M.ConcreteTagPair>placeholder);
     } else {
-      return this._updateSimplePlaceholder(placeholder);
+      return this._updateSimplePlaceholder(<M.ConcretePlaceholder>placeholder);
     }
   }
 
-  _updateTagPlaceholder(placeholder) {
+  _updateTagPlaceholder(placeholder: M.ConcreteTagPair): M.ConcreteTagPair {
     var canonicalKey = placeholder.toLongFingerprint();
     this._byFingerprint.set(canonicalKey, placeholder);
     return placeholder;
   }
 
-  _updateSimplePlaceholder(placeholder) {
+  _updateSimplePlaceholder(placeholder: M.ConcretePlaceholder): M.ConcretePlaceholder {
     var canonicalKey = placeholder.toLongFingerprint();
-    var existingPlaceholder = this._byFingerprint.get(canonicalKey);
+    var existingPlaceholder = (<M.ConcretePlaceholder>this._byFingerprint.get(canonicalKey));
     if (existingPlaceholder !== void 0) {
-      var numNames = toBool(placeholder.name) + toBool(existingPlaceholder.name);
+      var numNames: number = <any>toBool(placeholder.name) + <any>toBool(existingPlaceholder.name);
       if (numNames === 2) {
         if (placeholder.name != existingPlaceholder.name) {
           throw Error('The same placeholder occurs more than once with a different placeholder name.');
