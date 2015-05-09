@@ -1,33 +1,33 @@
-import assert from 'assert';
-import util from 'util';
-import fs from 'fs';
-import S from 'string';
+// TODO: replace with the correct type after PlaceholderRegistry.es6 → PlaceholderRegistry.ts migration.
+type ckckPlaceholderRegistry = any;
+
+import * as assert from 'assert';
+import * as util from 'util';
+import * as fs from 'fs';
+var S = require('string');
 
 import * as M from './message_types';
-import {adapter as treeAdapter} from './parse_html';
-import PlaceholderRegistry from './placeholderRegistry';
+import {adapter as treeAdapter, Node, Attr} from './parse_html';
+var PlaceholderRegistry = require('./PlaceholderRegistry');
 import {splitN} from './stringUtils';
 import {quoteHtmlAttribute} from './quoting';
-import {computeIdForMessageBuilder} from './fingerprinting';
+var computeIdForMessageBuilder = require('./fingerprinting').computeIdForMessageBuilder;
 
 function nop() {}
 
-function tobool(o) {
+function tobool(o: any): boolean {
   return o != null && o != "";
 }
 
-function ifNull(o, whenNull) {
+function ifNull<T>(o: T, whenNull: T): T {
   return (o == null) ? whenNull : o;
 }
 
 class ParsedComment {
-  constructor(meaning, comment) {
-    this.meaning = meaning;
-    this.comment = comment;
-  }
+  constructor(public meaning: string, public comment: string) {}
 }
 
-function validateValidPlaceholderName(phName) {
+function validateValidPlaceholderName(phName: string) {
   if (phName == null || phName === "") {
     throw Error(`invalid placeholder name: ${phName}: empty name`);
   }
@@ -44,12 +44,12 @@ function validateValidPlaceholderName(phName) {
   }
 }
 
-function parseRawComment(rawComment) {
+function parseRawComment(rawComment: string) {
   rawComment = rawComment.trim();
   if (rawComment.indexOf("|") == -1) {
     return new ParsedComment(null, rawComment);
   }
-  var [meaning, comment] = [for (part of splitN(rawComment, '|', 1)) part.trim()];
+  var [meaning, comment] = splitN(rawComment, '|', 1).map((part) => part.trim());
   if (meaning === "") {
     throw Error('meaning was explicitly specified but is empty');
   }
@@ -57,8 +57,8 @@ function parseRawComment(rawComment) {
 }
 
 var NG_EXPR_PH_RE = /i18n-ph\((.*)\)/;
-function parseNgExpression(text) {
-  var name = null, examples = null, comment = "Angular Expression";
+function parseNgExpression(text: string): M.NgExpr {
+  var name: string = null, examples: string[] = null, comment = "Angular Expression";
   // text should not have the {{ }} around it.
   text = text.trim();
   if (text.lastIndexOf("//") == -1) {
@@ -73,21 +73,21 @@ function parseNgExpression(text) {
     throw Error("Angular expression has a comment but it wasn't valid i18n-ph() syntax")
   }
   var phText = m[1].trim();
-  var phName = phText, example = null;
+  var phName = phText, example: string = null;
   parts = splitN(phText, "|", 1);
   if (parts.length > 1) {
     phName = parts[0].trim();
     example = parts[1].trim();
   }
   validateValidPlaceholderName(phName);
-  var examples = (example == null) ? null : [example];
+  examples = (example == null) ? null : [example];
   return new M.NgExpr(
       /*name=*/phName, /*text=*/text, /*examples=*/examples, /*comment=*/comment);
 }
 
 var NG_EXPR_RE = /\{\{\s*(.*?)\s*\}\}/;
-function parseMessageTextForNgExpressions(text, placeholderRegistry) {
-  var parts = [];
+function parseMessageTextForNgExpressions(text: string, placeholderRegistry: ckckPlaceholderRegistry) {
+  var parts: M.ConcreteMessagePart[] = [];
   var splits = text.split(NG_EXPR_RE);
   if (splits.length % 2 == 1) {
     // So that our loop can "safely" inspect 2 items at a time.
@@ -100,26 +100,26 @@ function parseMessageTextForNgExpressions(text, placeholderRegistry) {
     }
     var expr = splits[i+1].trim();
     if (expr.length > 0) {
-      var ngExpr = placeholderRegistry.updatePlaceholder(parseNgExpression(expr));
+      var ngExpr: M.NgExpr = placeholderRegistry.updatePlaceholder(parseNgExpression(expr));
       parts.push(ngExpr);
     }
   }
   return parts;
 }
 
-function _serializeHtmlAttr(name, value) {
+function _serializeHtmlAttr(name: string, value: string): string {
   return (value == null) ? name : `${name}=${quoteHtmlAttribute(value)}`;
 }
 
-function _getSerializedAttrs(node) {
-  var serializedAttrs = [];
+function _getSerializedAttrs(node: Node) {
+  var serializedAttrs: string[] = [];
   for (let attr of ifNull(treeAdapter.getAttrList(node), [])) {
     serializedAttrs.push(_serializeHtmlAttr(attr.name, attr.value));
   }
   return serializedAttrs.join(' ');
 }
 
-function _getHtmlBeginEndTags(node) {
+function _getHtmlBeginEndTags(node: Node): { begin: string, end: string } {
   var serializedAttrs = _getSerializedAttrs(node);
   if (serializedAttrs !== "") {
     serializedAttrs = ' ' + serializedAttrs;
@@ -127,51 +127,56 @@ function _getHtmlBeginEndTags(node) {
   var tag = treeAdapter.getTagName(node);
   var begin = `<${tag}${serializedAttrs}>`;
   var end = `</${tag}>`;
-  return {begin: begin, end: end};
+  return {begin, end};
 }
 
-function _parseNode(node, placeholderRegistry) {
+function _parseNode(node: Node, placeholderRegistry: ckckPlaceholderRegistry): M.ConcreteMessagePart[] {
   if (treeAdapter.isTextNode(node)) {
     return parseMessageTextForNgExpressions(treeAdapter.getTextNodeContent(node), placeholderRegistry);
   }
-  var parts = [];
-  function extendParts(extra) {
+  var parts: M.ConcreteMessagePart[] = [];
+  function extendParts(extra: M.ConcreteMessagePart[]) {
     extra.forEach(value => parts.push(value));
   }
   for (let child of treeAdapter.getChildNodes(node)) {
     extendParts(_parseNode(child, placeholderRegistry));
   }
   var canonicalKey = placeholderRegistry.reserveNewTag(treeAdapter.getTagName(node));
-  var beginEndTags = _getHtmlBeginEndTags(node);
+  var {begin, end} = _getHtmlBeginEndTags(node);
   var tagPair = M.HtmlTagPair.NewForParsing(
       /*tag=*/treeAdapter.getTagName(node),
-      /*begin=*/beginEndTags.begin,
-      /*end=*/beginEndTags.end,
+      /*begin=*/begin,
+      /*end=*/end,
       /*parts=*/parts,
       /*examples=*/null,
       /*tagFingerprintLong=*/canonicalKey);
   return [placeholderRegistry.updatePlaceholder(tagPair)];
 }
 
-function parseNodeContents(root, placeholderRegistry) {
-  var parts = [];
-  function extendParts(extra) {
+function parseNodeContents(root: Node, placeholderRegistry: ckckPlaceholderRegistry): M.ConcreteMessagePart[] {
+  var parts: M.ConcreteMessagePart[] = [];
+  function extendParts(extra: M.ConcreteMessagePart[]) {
     extra.forEach(value => parts.push(value));
   }
-  ifNull(treeAdapter.getChildNodes(root), []).forEach(childNode =>
+  ifNull(treeAdapter.getChildNodes(root), []).forEach((childNode: Node) =>
       extendParts(_parseNode(childNode, placeholderRegistry)));
   return parts;
 }
 
 
 class MessageBuilder {
-  constructor(rawComment, rawMessage, parent) {
+  public parent: MessageBuilder;
+  public meaning: string;
+  public comment: string;
+  public parts: M.ConcreteMessagePart[];
+  public placeholderRegistry: ckckPlaceholderRegistry;
+
+  constructor(rawComment: string, rawMessage: Node|string, parent?: MessageBuilder) {
     this.parent = parent;
     var parsedComment = parseRawComment(rawComment);
     this.meaning = parsedComment.meaning;
     this.comment = parsedComment.comment;
-    //ckck// this.placeholderRegistry = (parent ? parent.placeholderRegistry : new PlaceholderRegistry());
-    this.placeholderRegistry = new PlaceholderRegistry();
+    this.placeholderRegistry = (parent != null ? parent.placeholderRegistry : new PlaceholderRegistry());
     if (typeof rawMessage === "string") {
       this.parts = parseMessageTextForNgExpressions(rawMessage, this.placeholderRegistry);
     } else {
@@ -179,7 +184,7 @@ class MessageBuilder {
     };
   }
 
-  build() {
+  build(): M.Message {
     var id = computeIdForMessageBuilder(this);
     var placeholdersByName = this.placeholderRegistry.toMap();
     return new M.Message(/*id=*/id,
@@ -190,15 +195,20 @@ class MessageBuilder {
   }
 }
 
-var I18N_ATTRIB_PREFIX = 'i18n-';
+const I18N_ATTRIB_PREFIX = 'i18n-';
 
-var _dummyOnParse = {
+export interface OnParse {
+  onAttrib: (message: M.Message, node: Node, attrName: string) => void;
+  onNode:   (message: M.Message, node: Node) => void;
+}
+
+const _dummyOnParse: OnParse = {
   onAttrib: nop,
   onNode: nop
 };
 
 
-function _findAttrib(node, attrName) {
+function _findAttrib(node: Node, attrName: string): Attr {
   for (let attr of ifNull(treeAdapter.getAttrList(node), [])) {
     if (attr.name === attrName) {
       return attr;
@@ -207,20 +217,20 @@ function _findAttrib(node, attrName) {
   return null;
 }
 
+export type MessagesMap = Map<string, M.Message>;
 
 class MessageParser {
-  constructor(onParse) {
-    this.onParse = onParse;
-    this.nodes = [];
-    this.messages = new Map();
-  }
+  public nodes: Node[] = [];;
+  public messages: MessagesMap = new Map<string, M.Message>();
 
-  _parseI18nAttribs(node) {
-    var attrList = treeAdapter.getAttrList(node);
+  constructor(public onParse: OnParse) {}
+
+  _parseI18nAttribs(node: Node): void {
+    var attrList: Attr[] = treeAdapter.getAttrList(node);
     if (attrList == null || attrList.length == 0) {
       return;
     }
-    var i18nAttribs = [];
+    var i18nAttribs: Attr[] = [];
     var valuesByName = new Map();
     attrList.forEach(function(attr) {
       valuesByName.set(attr.name, attr.value);
@@ -241,7 +251,7 @@ class MessageParser {
   }
 
   // Returns true if this was an i18n node and false otherwise.
-  _parseMessagesInI18nNode(node) {
+  _parseMessagesInI18nNode(node: Node): boolean {
     var i18nAttr = _findAttrib(node, "i18n");
     if (i18nAttr == null) {
       return false;
@@ -252,7 +262,7 @@ class MessageParser {
     return true;
   }
 
-  parseMessages(root) {
+  parseMessages(root: Node): void {
     this.nodes.push(root);
     while (this.nodes.length > 0) {
       let node = this.nodes.shift();
@@ -269,7 +279,7 @@ class MessageParser {
 }
 
 
-export function parseMessages(rootNode, /* optional */onParse) {
+export function parseMessages(rootNode: Node, onParse: OnParse): MessagesMap {
   if (onParse == null) {
     onParse = _dummyOnParse;
   }

@@ -9,6 +9,8 @@ rule babeljs
 
 build lib/parse_html.js lib/parse_html.d.ts lib/parse_html.js.map: $
     typescript_to_nodejs lib/parse_html.ts
+build lib/parse_messages.js lib/parse_messages.d.ts $
+    lib/parse_messages.js.map: typescript_to_nodejs lib/parse_messages.ts
 build lib/hashing.js lib/hashing.d.ts lib/hashing.js.map: $
     typescript_to_nodejs lib/hashing.ts
 build lib/quoting.js lib/quoting.d.ts lib/quoting.js.map: $
@@ -41,9 +43,6 @@ build lib/placeholderRegistryHints.js lib/placeholderRegistryHints.d.ts $
 build lib/fingerprinting.js lib/fingerprinting.js.map: babeljs $
     lib/fingerprinting.es6
   out_js = lib/fingerprinting.js
-build lib/parse_messages.js lib/parse_messages.js.map: babeljs $
-    lib/parse_messages.es6
-  out_js = lib/parse_messages.js
 build lib/placeholderRegistry.js lib/placeholderRegistry.js.map: babeljs $
     lib/placeholderRegistry.es6
   out_js = lib/placeholderRegistry.js
