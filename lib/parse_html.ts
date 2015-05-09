@@ -4,6 +4,10 @@ import * as assert from 'assert';
 // TODO: Get type definitions for parse5 and convert this to an import statement.
 const parse5 = require('parse5');
 
+// TODO: Need a definitions file for parse5.
+export type Node = any;  // A parse5 returned node object.
+export type Attr = any;  // A parse5 returned attribute object.
+
 const _ADAPTER = parse5.TreeAdapters.default;
 
 export const adapter = _ADAPTER;
