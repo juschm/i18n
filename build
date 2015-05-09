@@ -8,13 +8,5 @@ typescript_to_js() {
 }
 export -f typescript_to_js
 
-babeljs() {
-  set -x ; ./node_modules/.bin/babel --optional runtime --source-maps --stage 0 --out-file "${1/%.es6/.js}" "$1"
-}
-export -f babeljs
-
 # Build everything in parallel.
-{
-  find lib -name '*.ts' -a '!' -name '*.d.ts'  -exec printf 'typescript_to_js %s\000' '{}' ';'
-  find lib -name '*.es6' -exec printf 'babeljs %s\000' '{}' ';'
-} | xargs -0 -n 1 -P $NUM_PARALLEL_PROCESSES bash -c
+find lib -name '*.ts' -a '!' -name '*.d.ts' -print0 | xargs -0 -n 1 -P $NUM_PARALLEL_PROCESSES -I FNAME bash -c "typescript_to_js FNAME"
