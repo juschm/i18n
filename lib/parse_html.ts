@@ -19,7 +19,7 @@ export function parseHtml(html: string) {
   // Normally, "root" is the document node and contains the optional doctype
   // node and the HTML node as children.  We'll skip the doctype node and
   // return the only HTML node.
-  let element = null;
+  let element:Node = null;
   for (let child of _ADAPTER.getChildNodes(root)) {
     if (!_ADAPTER.isDocumentTypeNode(child)) {
       if (element !== null) {

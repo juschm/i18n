@@ -36,7 +36,7 @@ function _repeatN<T>(n: number, value: T, finalValue: T): GetValue<T> {
 function _splitFromLeft(text: string, separator: string, shouldContinueFn: ShouldContinueFn): StringIterator {
   var i = 0;
   var iterator = { next: next };
-  function next() {
+  function next(): string {
     var j = shouldContinueFn() ? text.indexOf(separator, i) : -1;
     if (j == -1) {
       iterator.next = done;
@@ -46,7 +46,7 @@ function _splitFromLeft(text: string, separator: string, shouldContinueFn: Shoul
     i = j + separator.length;
     return piece;
   }
-  function done() {
+  function done(): string {
     iterator.next = null;
     return null;
   }
@@ -56,8 +56,8 @@ function _splitFromLeft(text: string, separator: string, shouldContinueFn: Shoul
 function _splitFromRight(text: string, separator: string, shouldContinueFn: ShouldContinueFn): StringIterator {
   var i = text.length;
   var iterator = { next: next };
-  var sepEnd, i2;
-  function next() {
+  var sepEnd: number, i2: number;
+  function next(): string {
     var shouldContinue = shouldContinueFn();
     i2 = i;
     do {
@@ -73,7 +73,7 @@ function _splitFromRight(text: string, separator: string, shouldContinueFn: Shou
     i = j;
     return piece;
   }
-  function done() {
+  function done(): string {
     iterator.next = null;
     return null;
   }
@@ -86,9 +86,9 @@ export function splitN(text: string, separator: string, maxTimes: number, fromRi
   assert(separator != "" && typeof separator == "string", "separator cannot be an empty string");
   var shouldContinueFn = _repeatN(maxTimes, true, false);
   var iter = (fromRight ? _splitFromRight : _splitFromLeft)(text, separator, shouldContinueFn);
-  var pieces = [], piece, pusher = fromRight ? "unshift" : "push";
+  var pieces: string[] = [], piece: string;
   while (null != (piece = iter.next())) {
-    pieces[pusher](piece);
+    fromRight ? pieces.unshift(piece) : pieces.push(piece);
   }
   return pieces;
 }

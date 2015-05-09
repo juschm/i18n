@@ -119,15 +119,6 @@ export class Message {
               public placeholdersMap: PlaceHoldersMap) {}
 }
 
-export function getStableTypeName(part: SerializableTypes): string {
-  var stableTypeName = (<any>part.constructor).$stableTypeName;
-  if (stableTypeName === void 0) {
-    throw Error(`Internal Error: Trying to get a stable type name for object of type: ${part.constructor}`);
-  }
-  return stableTypeName;
-}
-
-
 /* These fixed strings have to be stable and are intended to be
  * backwards/forwards compatible.  They are used in the computation of the
  * message fingerprint (for message id) and in the JSON serialization of our
@@ -145,6 +136,10 @@ export const TYPENAME_TAG_PAIR_END_REF:StableTypeName = "TagPairEnd";
 export const TYPENAME_HTML_TAG_PAIR:StableTypeName = "HtmlTagPair";
 export const TYPENAME_MESSAGE:StableTypeName = "Message";
 
+interface CtorWithStableTypeName extends Function {
+  $stableTypeName: StableTypeName;
+}
+
 // This is the set of types that all serializer plugins (file format plugins
 // for JSON, XLIFF, etc.) have to support.  This list is available to those
 // plugins.  They can choose to throw an Error if a new type they do not
@@ -158,6 +153,16 @@ export const SERIALIZABLE_TYPES = Object.freeze(newSet<Function>([
     Message
 ]));
 
+
+export function getStableTypeName(part: SerializableTypes): string {
+  var stableTypeName = (<CtorWithStableTypeName>part.constructor).$stableTypeName;
+  if (stableTypeName === void 0) {
+    throw Error(`Internal Error: Trying to get a stable type name for object of type: ${part.constructor}`);
+  }
+  return stableTypeName;
+}
+
+
 (function init() {
   var typeNamesSeen = new Set<StableTypeName>();
   // The following cast to <any> is required since TypeScript 1.5 does not
@@ -166,7 +171,7 @@ export const SERIALIZABLE_TYPES = Object.freeze(newSet<Function>([
   // TS2346: Supplied parameters do not match any signature of call target
   var serializableTypes: Set<Function> = new (<any>Set)(SERIALIZABLE_TYPES);
 
-  function registerStableTypeName(ctor, stableTypeName: StableTypeName) {
+  function registerStableTypeName(ctor: Function, stableTypeName: StableTypeName) {
     if (typeNamesSeen.has(stableTypeName)) {
       throw Error(`Internal Error: Attempting to reuse stable type name: ${stableTypeName}`);
     }
@@ -175,7 +180,7 @@ export const SERIALIZABLE_TYPES = Object.freeze(newSet<Function>([
     }
     typeNamesSeen.add(stableTypeName);
     serializableTypes.delete(ctor);
-    ctor.$stableTypeName = stableTypeName;
+    (<CtorWithStableTypeName>ctor).$stableTypeName = stableTypeName;
   }
 
   registerStableTypeName(TextPart, TYPENAME_TEXT_PART);

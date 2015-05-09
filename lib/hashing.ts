@@ -9,12 +9,12 @@
 import * as crypto from 'crypto';
 
 export interface Hasher {
-  update(data);
+  update(data: string): void;
   hexdigest(): string;
 }
 
 export class SHA1 implements Hasher {
-  private shasum;
+  private shasum: crypto.Hash;
 
   constructor() {
     this.shasum = crypto.createHash('sha1');

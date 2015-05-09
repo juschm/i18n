@@ -17,12 +17,12 @@ var assert = require("assert"),
 export class Extractor {
   constructor(public config: AppConfig) {}
 
-  writeMessagesToJson(messages) {
+  writeMessagesToJson(messages: Message[]) {
     var dst = this.config.dataDir + "/messages.json";
     console.log(`Writing JSON to file: ${dst}`);
     var jsonSerializer = SerializerRegistry.create('json');
     // TODO: jsonSerializer should be able to deal with a collection of messages.
-    var jsonItems = [];
+    var jsonItems: string[] = [];
     messages.forEach(function(value) {
       jsonItems.push(jsonSerializer.stringify(value));
     });
@@ -31,12 +31,12 @@ export class Extractor {
   }
 
   run() {
-    var allMessages = [];
+    var allMessages: Message[] = [];
     for (let src of this.config.htmlSrcs) {
       console.log(`Processing file: ${src}`);
       var html:string = fs.readFileSync(src, {encoding: "utf-8"});
       // assertValidHtml(html);
-      parseMessages(parseHtml(html)).forEach(function(message) {
+      parseMessages(parseHtml(html)).forEach(function(message: Message) {
         allMessages.push(message);
       });
       // todo: compare with previous extraction?

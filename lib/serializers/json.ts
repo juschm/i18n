@@ -250,11 +250,11 @@ function placeholderFromPojo(obj: PlaceholderPojo): M.ConcretePlaceholder {
 }
 
 class JsonSerializer implements Serializer {
-  stringify(obj) {
+  stringify(obj: M.Message) {
     assert(M.getStableTypeName(obj) === M.TYPENAME_MESSAGE);
     return JSON.stringify(messageToPojo(obj), null, 4);
   }
-  parse(s) {
+  parse(s: string) {
     return messageFromPojo(JSON.parse(s));
   }
 }

@@ -34,7 +34,7 @@ const DEFAULT_CONFIG_FNAME = "i18n.json";
 var defaultValues = new AppConfig();
 defaultValues.dataDir = "i18nData";
 
-export function loadConfigFromFile(fname): AppConfig {
+export function loadConfigFromFile(fname: string): AppConfig {
   var jsonText = fs.readFileSync(fname, {encoding: "utf-8"});
   var config = JSON.parse(jsonText);
   assert(config.htmlSrcs !== void 0);
