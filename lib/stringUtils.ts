@@ -81,7 +81,7 @@ function _splitFromRight(text: string, separator: string, shouldContinueFn: Shou
 }
 
 // split at most maxTimes.
-export function splitN(text: string, separator: string, maxTimes: number, fromRight: boolean): string[] {
+export function splitN(text: string, separator: string, maxTimes: number, fromRight?: boolean): string[] {
   assert(maxTimes === void 0 || (maxTimes >= -1 && Math.floor(maxTimes) == maxTimes), "maxTimes must be an integer >= -1");
   assert(separator != "" && typeof separator == "string", "separator cannot be an empty string");
   var shouldContinueFn = _repeatN(maxTimes, true, false);
