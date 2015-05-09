@@ -1,4 +1,4 @@
-declare function require(name:string);
+/// <reference path="../typings/node/node.d.ts" />
 
 require('source-map-support').install();
 
