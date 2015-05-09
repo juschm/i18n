@@ -9,6 +9,3 @@ export default class Counter {
     this.next = () => this._current++;
   }
 }
-
-// Support importing from babeljs transpiled files.
-export var __esModule = true;

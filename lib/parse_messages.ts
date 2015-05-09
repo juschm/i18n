@@ -161,7 +161,7 @@ function parseNodeContents(root: Node, placeholderRegistry: PlaceholderRegistry)
 }
 
 
-class MessageBuilder {
+export class MessageBuilder {
   public parent: MessageBuilder;
   public meaning: string;
   public comment: string;

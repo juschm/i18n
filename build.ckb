@@ -1,9 +1,25 @@
 # -*- mode: python; -*- vim: set filetype=python:
 
-for ts_lib in "parse_html parse_messages hashing quoting stringUtils newSet serializers/json serializer message_types config LoadingCache extractMessages Counter placeholderRegistryHintsForHtmlTags placeholderRegistryHints placeholderRegistry".split():
-  typescript_to_nodejs(
-      name="lib/{0}".format(ts_lib),
-      srcs=["lib/{0}.ts".format(ts_lib)])
+TS_FILES = """
+Counter
+LoadingCache
+config
+extractMessages
+fingerprinting
+hashing
+message_types
+newSet
+parse_html
+parse_messages
+placeholderRegistry
+placeholderRegistryHints
+placeholderRegistryHintsForHtmlTags
+quoting
+serializer
+serializers/json
+stringUtils
+""".strip().splitlines()
 
-babeljs(name="lib/fingerprinting",
-        srcs=["lib/fingerprinting.es6"])
+for ts_file in TS_FILES:
+  typescript_to_nodejs(name="lib/{0}".format(ts_file),
+                       srcs=["lib/{0}.ts".format(ts_file)])

@@ -194,7 +194,3 @@ export function getStableTypeName(part: SerializableTypes): string {
     throw Error(`Internal Error: Postcondition failed in init()`);
   }
 })();
-
-
-// Support importing from babeljs transpiled files.
-export var __esModule = true;
