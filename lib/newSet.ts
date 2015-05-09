@@ -1,16 +1,24 @@
-// Work around ES6 Set constructor limitation in TypeScript 1.5
-//
-// In TypeScript 1.5, the following line,
-//
-//     var s = new Set([1, 2, 3]);
-//
-// result in the following error.
-//
-//     TS2346: Supplied parameters do not match any signature of call target
-//
-// The following is a hack since I couldn't work around it easily (Iterable<T>
-// is not recognized, etc. so much harder to expand the definition.)
+// Safari and Internet Explorer do not support the iterable parameter to the
+// Set constructor.  We work around that by manually adding the items.
+
+const newSetFromArray = (function() {
+  try {
+    if (new Set([1, 2]).size === 2) {
+      return function createSetFromArray<T>(array: T[]): Set<T> {
+        return new Set(array);
+      };
+    }
+  } catch (e) {
+  }
+  return function createSetFromArray<T>(array: T[]): Set<T> {
+    var set = new Set<T>();
+    for (var i = 0; i < array.length; i++) {
+      set.add(array[i]);
+    }
+    return set;
+  }
+})();
 
 export default function newSet<T>(array?: T[]): Set<T> {
-  return array === void 0 ? new Set<T>() : new (<any>Set)(array);
+  return (array === void 0) ? new Set<T>() : newSetFromArray<T>(array);
 }
