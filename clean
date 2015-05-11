@@ -1,0 +1,4 @@
+#!/bin/bash
+set -e -o pipefail
+
+find lib \( -name '*.js' -o -name '*.d.ts' -o -name '*.js.map' \) -a -exec /bin/rm -- '{}' +
