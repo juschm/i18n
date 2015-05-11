@@ -3,7 +3,17 @@ set -e -o pipefail
 
 NUM_PARALLEL_PROCESSES=6
 
-TYPESCRIPT_TO_NODEJS=(./node_modules/.bin/tsc --noImplicitAny --noEmitOnError --target ES5 --module commonjs -d --sourceMap --noLib ./node_modules/typescript/bin/lib.es6.d.ts)
+TYPESCRIPT_TO_NODEJS=(./node_modules/.bin/tsc \
+  --noImplicitAny \
+  --noEmitOnError \
+  --target ES5 \
+  --module commonjs \
+  --declaration \
+  --sourceMap \
+  --noLib \
+  ./node_modules/typescript/bin/lib.es6.d.ts \
+  ./typings/node/node.d.ts \
+  )
 
 # Build everything in parallel.
 find lib -name '*.ts' -a '!' -name '*.d.ts' -print0 | xargs -0 -n 1 -P $NUM_PARALLEL_PROCESSES -t "${TYPESCRIPT_TO_NODEJS[@]}"

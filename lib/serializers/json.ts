@@ -1,5 +1,3 @@
-///<reference path='../../typings/node/node.d.ts'/>
-
 import * as assert from 'assert';
 
 import * as M from '../message_types';

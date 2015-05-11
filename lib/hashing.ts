@@ -1,5 +1,3 @@
-///<reference path='../typings/node/node.d.ts'/>
-
 /**
  * This is a facade around the minimal hashing interface that we're using for
  * fingerpriting.  We might need to do this from the browser or the command

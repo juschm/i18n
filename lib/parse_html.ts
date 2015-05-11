@@ -1,4 +1,3 @@
-///<reference path='../typings/node/node.d.ts'/>
 import * as assert from 'assert';
 
 // TODO: Get type definitions for parse5 and convert this to an import statement.
