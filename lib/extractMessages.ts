@@ -1,16 +1,13 @@
 require('source-map-support').install();
 
 var ckckStringify = require('./../ckckStringify');
+import * as fs from 'fs';
 
 import {AppConfig, loadAppConfig} from './config';
 import {Message} from './message_types';
 import SerializerRegistry from './serializer';
-
-var assert = require("assert"),
-    fs = require("fs"),
-    parseHtml = require("./parse_html").parseHtml,
-    parseMessages = require("./parse_messages").parseMessages;
-
+import {parseHtml} from './parse_html';
+import {parseMessages} from './parse_messages';
 
 export class Extractor {
   constructor(public config: AppConfig) {}

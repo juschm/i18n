@@ -276,7 +276,7 @@ class MessageParser {
 }
 
 
-export function parseMessages(rootNode: Node, onParse: OnParse): MessagesMap {
+export function parseMessages(rootNode: Node, onParse?: OnParse): MessagesMap {
   if (onParse == null) {
     onParse = _dummyOnParse;
   }
