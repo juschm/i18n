@@ -1,6 +1,5 @@
 require('source-map-support').install();
 
-var ckckStringify = require('./../ckckStringify');
 import * as fs from 'fs';
 
 import {AppConfig, loadAppConfig} from './config';
@@ -40,37 +39,6 @@ export class Extractor {
       // todo: what src file should be associated with the message?
     }
     this.writeMessagesToJson(allMessages);
-  }
-
-  debugRun() {
-    for (let src of this.config.htmlSrcs) {
-      var html:string = fs.readFileSync(src, {encoding: "utf-8"});
-      var rootNode = parseHtml(html);
-      var messages:Map<string, Message> = parseMessages(rootNode);
-      var logStringify = 0;
-      var logPojo = 0;
-      var logDumpParse = 1;
-
-      if (logStringify) {
-        console.log(ckckStringify(messages));
-      }
-
-      if (logPojo) {
-        var jsonSerializer = SerializerRegistry.create('json');
-        messages.forEach(function(value) {
-          console.log(jsonSerializer.stringify(value));
-        });
-      }
-
-      if (logDumpParse) {
-        var jsonSerializer = SerializerRegistry.create('json');
-        messages.forEach(function(value) {
-          console.log("\n\nVALUE: %s\n\n", ckckStringify(value));
-          console.log("\n\nJSON: %s\n\n", jsonSerializer.stringify(value));
-          console.log("\n\nPARSED: %s\n\n", ckckStringify(jsonSerializer.parse(jsonSerializer.stringify(value))));
-        });
-      }
-    }
   }
 }
 
