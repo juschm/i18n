@@ -13,7 +13,7 @@ const _ADAPTER = parse5.TreeAdapters.default;
 export const adapter = _ADAPTER;
 
 // Returns the root element.
-export function parseHtml(html: string) {
+export function parseHtml(html: string): Node {
   let parser = new parse5.Parser(_ADAPTER);
   let root = parser.parse(html);
   // Normally, "root" is the document node and contains the optional doctype
