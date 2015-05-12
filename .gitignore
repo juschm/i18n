@@ -117,3 +117,14 @@ google3/build_log.txt
 
 # This project
 node_modules/
+
+# generated from .ts/.es6
+*.js
+*.js.map
+*.d.ts
+# generated for .ts/.es6/.js during implicit dependency analysis (ninja only)
+*.depfile
+
+# Our spec directory contains test files written as .js that should not be ignored.
+!/spec/*.js
+!/spec/*/*.js
