@@ -42,7 +42,132 @@
 },
 {
     "$type": "Message",
-    "id": "735232eece560a4bb63c6ed64cc5ab55d355277b",
+    "id": "4db22bf824d4372148efc95f8b3bde2dd9f9d850",
+    "meaning": null,
+    "comment": "block with html",
+    "parts": [
+        "\n    Hello ",
+        [
+            "EXPRESSION"
+        ],
+        " ",
+        {
+            "$type": "HtmlTagPair",
+            "tag": "span",
+            "begin": "<span>",
+            "end": "</span>",
+            "parts": [
+                "and"
+            ],
+            "examples": null,
+            "tagFingerprintLong": "TAG_span_1",
+            "beginPlaceholderRef": [
+                "SPAN_BEGIN"
+            ],
+            "endPlaceholderRef": [
+                "SPAN_END"
+            ]
+        },
+        " your world!\n  "
+    ],
+    "placeholdersMap": {
+        "EXPRESSION": {
+            "$type": "NgExpr",
+            "name": "EXPRESSION",
+            "text": "user",
+            "examples": null,
+            "comment": "Angular Expression"
+        },
+        "SPAN_BEGIN": {
+            "$type": "TagPairBegin",
+            "name": "SPAN_BEGIN",
+            "text": "<span>",
+            "examples": [
+                "<span>"
+            ],
+            "comment": "Begin HTML <span> tag"
+        },
+        "SPAN_END": {
+            "$type": "TagPairEnd",
+            "name": "SPAN_END",
+            "text": "</span>",
+            "examples": [
+                "</span>"
+            ],
+            "comment": "End HTML </span> tag"
+        }
+    }
+},
+{
+    "$type": "Message",
+    "id": "329fb09d1cbd29605c0f1326e4d39f8378e2e6c8",
+    "meaning": null,
+    "comment": "block with TEST html",
+    "parts": [
+        "\n    TEST ",
+        [
+            "NAME"
+        ],
+        [
+            "NAME"
+        ],
+        " ",
+        {
+            "$type": "HtmlTagPair",
+            "tag": "span",
+            "begin": "<span>",
+            "end": "</span>",
+            "parts": [
+                "and"
+            ],
+            "examples": null,
+            "tagFingerprintLong": "TAG_span_1",
+            "beginPlaceholderRef": [
+                "SPAN_BEGIN"
+            ],
+            "endPlaceholderRef": [
+                "SPAN_END"
+            ]
+        },
+        " your ",
+        [
+            "NAME"
+        ],
+        " world!\n  "
+    ],
+    "placeholdersMap": {
+        "NAME": {
+            "$type": "NgExpr",
+            "name": "NAME",
+            "text": "user",
+            "examples": [
+                "chirayu"
+            ],
+            "comment": "Angular Expression"
+        },
+        "SPAN_BEGIN": {
+            "$type": "TagPairBegin",
+            "name": "SPAN_BEGIN",
+            "text": "<span>",
+            "examples": [
+                "<span>"
+            ],
+            "comment": "Begin HTML <span> tag"
+        },
+        "SPAN_END": {
+            "$type": "TagPairEnd",
+            "name": "SPAN_END",
+            "text": "</span>",
+            "examples": [
+                "</span>"
+            ],
+            "comment": "End HTML </span> tag"
+        }
+    }
+},
+{
+    "$type": "Message",
+    "id": "225e29c330ec0704b96c46e361cc2b2020b3153d",
     "meaning": null,
     "comment": "block with EMBEDDED SPANs",
     "parts": [
@@ -136,74 +261,7 @@
 },
 {
     "$type": "Message",
-    "id": "df5ab8ab994b8d820208ac4b3010d345031444a0",
-    "meaning": null,
-    "comment": "block with TEST html",
-    "parts": [
-        "\n    TEST ",
-        [
-            "NAME"
-        ],
-        [
-            "NAME"
-        ],
-        " ",
-        {
-            "$type": "HtmlTagPair",
-            "tag": "span",
-            "begin": "<span>",
-            "end": "</span>",
-            "parts": [
-                "and"
-            ],
-            "examples": null,
-            "tagFingerprintLong": "TAG_span_1",
-            "beginPlaceholderRef": [
-                "SPAN_BEGIN"
-            ],
-            "endPlaceholderRef": [
-                "SPAN_END"
-            ]
-        },
-        " your ",
-        [
-            "NAME"
-        ],
-        " world!\n  "
-    ],
-    "placeholdersMap": {
-        "NAME": {
-            "$type": "NgExpr",
-            "name": "NAME",
-            "text": "user",
-            "examples": [
-                "chirayu"
-            ],
-            "comment": "Angular Expression"
-        },
-        "SPAN_BEGIN": {
-            "$type": "TagPairBegin",
-            "name": "SPAN_BEGIN",
-            "text": "<span>",
-            "examples": [
-                "<span>"
-            ],
-            "comment": "Begin HTML <span> tag"
-        },
-        "SPAN_END": {
-            "$type": "TagPairEnd",
-            "name": "SPAN_END",
-            "text": "</span>",
-            "examples": [
-                "</span>"
-            ],
-            "comment": "End HTML </span> tag"
-        }
-    }
-},
-{
-    "$type": "Message",
-    "id": "f5809a5335d6f1ed1e7d11a845115c37768a2761",
+    "id": "8dcf61626c9f54d3fb8b71d9755c37df4a3e8a3f",
     "meaning": "greeting",
     "comment": "Greet the user",
     "parts": [
