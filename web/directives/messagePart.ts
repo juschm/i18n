@@ -15,9 +15,9 @@ export function icMessagePart() {
     scope: {
       part: "=icMessagePart"
     },
-    controller: function($scope: Scope) {
+    controller: ['$scope', function($scope: Scope) {
       $scope.getStableTypeName = M.getStableTypeName;
-    },
+    }],
     template: `
       <div ng-switch="getStableTypeName(part)" class="inline">
         <div ng-switch-when="TextPart"    ic-text-part    ="part"></div>

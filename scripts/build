@@ -22,4 +22,4 @@ find lib web -name '*.ts' -a '!' -name '*.d.ts' -print0 | xargs -0 -n 1 -P $NUM_
 
 # Bundle files for browser.
 # TODO: Source maps are broken.  We need to combine them together (use sorcery?)
-./node_modules/.bin/cjsc web/index.js --source-map='*.map' -o web/bundle.js --config web/cjsc_config.json
+./node_modules/.bin/cjsc web/index.js --minify --source-map='*.map' -o web/bundle.js --config web/cjsc_config.json

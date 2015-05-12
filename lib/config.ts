@@ -1,5 +1,5 @@
-var assert = require("assert");
-var fs = require("fs");
+import * as assert from 'assert';
+import * as fs from 'fs';
 
 import registerJsonSerializer from './serializers/json';
 registerJsonSerializer();

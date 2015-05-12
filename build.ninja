@@ -6,7 +6,7 @@ rule typescript_to_nodejs
 rule commonjs_bundle
   description = commonjs_bundle (cjsc): $in → $out (config=$CJSC_CONFIG)
   depfile = $out.depfile
-  command = ck commonjs_bundle --out $out --in $in --config $CJSC_CONFIG --depfile $depfile
+  command = ck commonjs_bundle --out $out --in $in --config $CJSC_CONFIG --depfile $depfile $extra_args
 
 build lib/Counter.js lib/Counter.d.ts lib/Counter.js.map: $
     typescript_to_nodejs lib/Counter.ts
@@ -67,6 +67,7 @@ build ./web/directives/htmlTagPair.js ./web/directives/htmlTagPair.d.ts $
     ./web/directives/htmlTagPair.js.map: typescript_to_nodejs $
     ./web/directives/htmlTagPair.ts
 build ./web/bundle.js: commonjs_bundle ./web/index.js | ./web/cjsc_config.json
+  extra_args = --minify
   CJSC_CONFIG = ./web/cjsc_config.json
 
 rule build_ninja_file

@@ -8,7 +8,7 @@ import {adapter as treeAdapter, Node, Attr} from './parse_html';
 import PlaceholderRegistry from './placeholderRegistry';
 import {splitN} from './stringUtils';
 import {quoteHtmlAttribute} from './quoting';
-var computeIdForMessageBuilder = require('./fingerprinting').computeIdForMessageBuilder;
+import {computeIdForMessageBuilder} from './fingerprinting';
 
 function nop() {}
 

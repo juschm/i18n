@@ -14,7 +14,8 @@ export interface Scope extends ng.IScope {
   M: typeof M;
 }
 
-app.controller('rootCtrl', function rootCtrl($scope: Scope, $http: ng.IHttpService) {
+app.controller('rootCtrl', ['$scope',      '$http', function rootCtrl(
+                             $scope: Scope, $http: ng.IHttpService) {
   $scope.messages = [];
   $scope.errors = [];
   $scope.M = M;
@@ -30,7 +31,7 @@ app.controller('rootCtrl', function rootCtrl($scope: Scope, $http: ng.IHttpServi
     error(function(response, status, headers, config) {
       $scope.errors.push("Error loading messages.json");
     });
-});
+}]);
 
 
 // Register all directives.

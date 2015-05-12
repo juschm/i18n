@@ -12,5 +12,6 @@ for ts_lib in "message messagePart messageParts ngExpr textPart htmlTagPair".spl
 commonjs_bundle(
     name="bundle.js",
     srcs=["index.js"],
-    config="cjsc_config.json")
+    config="cjsc_config.json",
+    minify=True)
 
