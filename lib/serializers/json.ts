@@ -257,7 +257,7 @@ class JsonSerializer implements Serializer {
   }
 }
 
-function newSerializer(): Serializer {
+export function newSerializer(): Serializer {
   if (arguments.length == 0) {
     return new JsonSerializer();
   }

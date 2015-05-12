@@ -17,5 +17,9 @@ TYPESCRIPT_TO_NODEJS=(./node_modules/.bin/tsc \
 
 cd $(git rev-parse --show-toplevel)
 
-# Build everything in parallel.
-find lib -name '*.ts' -a '!' -name '*.d.ts' -print0 | xargs -0 -n 1 -P $NUM_PARALLEL_PROCESSES -t "${TYPESCRIPT_TO_NODEJS[@]}"
+# Transpile files individually.
+find lib web -name '*.ts' -a '!' -name '*.d.ts' -print0 | xargs -0 -n 1 -P $NUM_PARALLEL_PROCESSES -t "${TYPESCRIPT_TO_NODEJS[@]}"
+
+# Bundle files for browser.
+# TODO: Source maps are broken.  We need to combine them together (use sorcery?)
+./node_modules/.bin/cjsc web/index.js --source-map='*.map' -o web/bundle.js --config web/cjsc_config.json

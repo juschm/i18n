@@ -128,3 +128,7 @@ node_modules/
 # Our spec directory contains test files written as .js that should not be ignored.
 !/spec/*.js
 !/spec/*/*.js
+
+# Third-party sources may have .js/.map files.
+!/web/third_party/*.js
+!/web/third_party/*.js.map

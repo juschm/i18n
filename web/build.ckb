@@ -1,0 +1,16 @@
+# -*- mode: python; -*- vim: set filetype=python:
+
+typescript_to_nodejs(
+    name="index",
+    srcs=["index.ts"])
+
+for ts_lib in "message messagePart messageParts ngExpr textPart htmlTagPair".split():
+  typescript_to_nodejs(
+      name="directives/{0}".format(ts_lib),
+      srcs=["directives/{0}.ts".format(ts_lib)])
+
+commonjs_bundle(
+    name="bundle.js",
+    srcs=["index.js"],
+    config="cjsc_config.json")
+

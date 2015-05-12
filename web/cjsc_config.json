@@ -1,0 +1,6 @@
+{
+    "assert": {
+        "path": "./web/assert.js",
+        "exports": [ "assert"]
+    }
+}

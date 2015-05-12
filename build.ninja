@@ -3,6 +3,11 @@ rule typescript_to_nodejs
   description = typescript_to_nodejs: $in → $out (DEPFILE=$depfile)
   command = ck typescript_to_nodejs --tsc_home ./node_modules/typescript --depfile $depfile --in $in
 
+rule commonjs_bundle
+  description = commonjs_bundle (cjsc): $in → $out (config=$CJSC_CONFIG)
+  depfile = $out.depfile
+  command = ck commonjs_bundle --out $out --in $in --config $CJSC_CONFIG --depfile $depfile
+
 build lib/Counter.js lib/Counter.d.ts lib/Counter.js.map: $
     typescript_to_nodejs lib/Counter.ts
 build lib/LoadingCache.js lib/LoadingCache.d.ts lib/LoadingCache.js.map: $
@@ -41,6 +46,28 @@ build lib/serializers/json.js lib/serializers/json.d.ts $
     lib/serializers/json.js.map: typescript_to_nodejs lib/serializers/json.ts
 build lib/stringUtils.js lib/stringUtils.d.ts lib/stringUtils.js.map: $
     typescript_to_nodejs lib/stringUtils.ts
+build ./web/index.js ./web/index.d.ts ./web/index.js.map: $
+    typescript_to_nodejs ./web/index.ts
+build ./web/directives/message.js ./web/directives/message.d.ts $
+    ./web/directives/message.js.map: typescript_to_nodejs $
+    ./web/directives/message.ts
+build ./web/directives/messagePart.js ./web/directives/messagePart.d.ts $
+    ./web/directives/messagePart.js.map: typescript_to_nodejs $
+    ./web/directives/messagePart.ts
+build ./web/directives/messageParts.js ./web/directives/messageParts.d.ts $
+    ./web/directives/messageParts.js.map: typescript_to_nodejs $
+    ./web/directives/messageParts.ts
+build ./web/directives/ngExpr.js ./web/directives/ngExpr.d.ts $
+    ./web/directives/ngExpr.js.map: typescript_to_nodejs $
+    ./web/directives/ngExpr.ts
+build ./web/directives/textPart.js ./web/directives/textPart.d.ts $
+    ./web/directives/textPart.js.map: typescript_to_nodejs $
+    ./web/directives/textPart.ts
+build ./web/directives/htmlTagPair.js ./web/directives/htmlTagPair.d.ts $
+    ./web/directives/htmlTagPair.js.map: typescript_to_nodejs $
+    ./web/directives/htmlTagPair.ts
+build ./web/bundle.js: commonjs_bundle ./web/index.js | ./web/cjsc_config.json
+  CJSC_CONFIG = ./web/cjsc_config.json
 
 rule build_ninja_file
   description = Building build.ninja
@@ -53,7 +80,8 @@ rule build_ninja_file
     /Users/chirayu/ck/ck5/python/ck/ckbuild/__init__.py $
     /Users/chirayu/ck/ck5/python/ck/ckbuild/__main__.py $
     /Users/chirayu/ck/ck5/python/ck/ckbuild/ninja_syntax.py $
-    /Users/chirayu/ck/ck5/python/ck/ckbuild/rules.py' > build.ninja.d && ck build_ninja_from_ckb --ninja_fname=build.ninja $in
+    /Users/chirayu/ck/ck5/python/ck/ckbuild/rules.py $
+    ./web/build.ckb' > build.ninja.d && ck build_ninja_from_ckb --ninja_fname=build.ninja $in
   generator = 1
 
 build build.ninja: build_ninja_file build.ckb

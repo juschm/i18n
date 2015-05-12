@@ -23,3 +23,5 @@ stringUtils
 for ts_file in TS_FILES:
   typescript_to_nodejs(name="lib/{0}".format(ts_file),
                        srcs=["lib/{0}.ts".format(ts_file)])
+
+subpackage("./web")

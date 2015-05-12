@@ -1,0 +1,55 @@
+.inline {
+  display: inline-block;
+}
+
+.TextPart {
+  background-color: white;
+  display: inline-block;
+  vertical-align: top;
+}
+
+.Placeholder {
+  background-color: lightcyan;
+  display: inline-block;
+  vertical-align: top;
+  color: gray;
+  border: 1px solid cyan;
+  border-radius: 4px;
+}
+
+.NgExpr {
+  background-color: lightcyan;
+  display: inline-block;
+  vertical-align: top;
+  color: gray;
+  border: 1px solid cyan;
+  border-radius: 4px;
+  padding-left: 2px;
+  padding-right: 2px;
+}
+
+.HtmlTagPair {
+  background-color: lightgreen;
+  display: inline-block;
+  vertical-align: top;
+  color: gray;
+  border: 1px solid green;
+  border-radius: 4px;
+}
+
+
+.NgExpr .details {
+  z-index: 10;
+  display: none;
+  padding: 10px;
+  margin-top: -0.25em;
+}
+
+
+.NgExpr:hover .details {
+  display:inline;
+  position:absolute;
+  color:#111;
+  border:1px solid #DCA;
+  background:#fffAF0;
+}
