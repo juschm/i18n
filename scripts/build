@@ -15,5 +15,7 @@ TYPESCRIPT_TO_NODEJS=(./node_modules/.bin/tsc \
   ./typings/node/node.d.ts \
   )
 
+cd $(git rev-parse --show-toplevel)
+
 # Build everything in parallel.
 find lib -name '*.ts' -a '!' -name '*.d.ts' -print0 | xargs -0 -n 1 -P $NUM_PARALLEL_PROCESSES -t "${TYPESCRIPT_TO_NODEJS[@]}"

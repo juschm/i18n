@@ -2,4 +2,6 @@
 
 set -e -o pipefail
 
+cd $(git rev-parse --show-toplevel)
+
 ./node_modules/.bin/jasmine-node spec/
