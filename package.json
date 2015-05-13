@@ -14,6 +14,7 @@
     "lodash": "~2.4.1",
     "q": "~1.0.0",
     "source-map-support": "~0.2.10",
+    "sorcery": "0.5.5",
     "tsd": "next"
   },
   "licenses": [
