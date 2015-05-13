@@ -125,10 +125,12 @@ node_modules/
 # generated for .ts/.es6/.js during implicit dependency analysis (ninja only)
 *.depfile
 
-# Our spec directory contains test files written as .js that should not be ignored.
-!/spec/*.js
-!/spec/*/*.js
+# Track .js files in our spec/ directory.
+!/spec/**/*.js
+
+# Track definitions in typings/ directories.
+!**/typings/**/*.d.ts
 
 # Third-party sources may have .js/.map files.
-!/web/third_party/*.js
-!/web/third_party/*.js.map
+!/web/third_party/**/*.js
+!/web/third_party/**/*.js.map
