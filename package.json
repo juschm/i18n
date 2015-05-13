@@ -12,6 +12,7 @@
     "jasmine-node": "~1.14.5",
     "jasmine-reporters": "~1.0.1",
     "lodash": "~2.4.1",
+    "minifyify": "~7.0.0",
     "q": "~1.0.0",
     "source-map-support": "~0.2.10",
     "sorcery": "0.5.5",
