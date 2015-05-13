@@ -20,4 +20,4 @@ cd $(git rev-parse --show-toplevel)
 
 # Bundle files for browser.
 # TODO: Source maps are broken.  We need to combine them together (use sorcery?)
-./node_modules/.bin/cjsc web/index.js --minify --source-map='*.map' -o web/bundle.js --config web/cjsc_config.json
+./node_modules/.bin/browserify --debug web/index.js -o web/bundle.js
