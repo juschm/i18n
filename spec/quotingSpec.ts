@@ -1,5 +1,4 @@
-"use strict";
-
+/// <reference path="../typings/jasmine/jasmine.d.ts" />
 require('source-map-support').install();
 
 var quoteHtmlAttribute = require("../lib/quoting").quoteHtmlAttribute;

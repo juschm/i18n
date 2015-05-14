@@ -1,8 +1,7 @@
-"use strict";
-
+/// <reference path="../typings/jasmine/jasmine.d.ts" />
 require('source-map-support').install();
 
-var Counter = require("../lib/Counter").default;
+import Counter from '../lib/Counter';
 
 describe("Counter", function() {
   describe("initial value", function() {

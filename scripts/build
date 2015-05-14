@@ -1,29 +1,19 @@
 #!/bin/bash
-set -e -o pipefail -x
+set -e -o pipefail
 
-cd $(git rev-parse --show-toplevel)
+cd "$(git rev-parse --show-toplevel)"
 
-# Transpile all TypeScript files.
-./node_modules/.bin/tsc \
-  --noImplicitAny \
-  --noEmitOnError \
-  --target ES5 \
-  --module commonjs \
-  --declaration \
-  --sourceMap \
-  --noLib \
-  ./node_modules/typescript/bin/lib.es6.d.ts \
-  ./typings/node/node.d.ts \
-  --rootDir $PWD \
-  lib/extractMessages.ts \
-  web/index.ts
+BUILD_DIR="$PWD/build"
+
+. ./scripts/build_rules.inc
+
+set -x
+
+# Spec files.
+run_tsc ./typings/jasmine/jasmine.d.ts spec/*.ts
+      
+# Lib files.
+run_tsc lib/extractMessages.ts web/index.ts
 
 # Bundle files for browser.
-./node_modules/.bin/browserify --debug web/index.js -p [minifyify --map web/bundle.js.map --output web/bundle.js.map] -o web/bundle.js
-
-# Fix up recursive source-maps with sorcery.
-# sorcery has an issue where it can't seem to get the relative path right so we
-# have to do this trickery to fix it.
-cp web/bundle.js . && \
-  ./node_modules/.bin/sorcery -i bundle.js -o web/bundle.js && \
-  rm bundle.js
+IN=build/web/index.js OUT=build/web/bundle.js run_browserify_with_minify

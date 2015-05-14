@@ -1,5 +1,4 @@
-"use strict";
-
+/// <reference path="../typings/jasmine/jasmine.d.ts" />
 require('source-map-support').install();
 
 var message_types = require("../lib/message_types");
@@ -28,11 +27,11 @@ function toSimpleObject(obj) {
     return toSimpleObject(mapToObj(obj));
   }
   if (obj instanceof Array) {
-    var simpleObj = [];
+    var simpleArray = [];
     for (var i = 0; i < obj.length; i++) {
-      simpleObj.push(toSimpleObject(obj[i]));
+      simpleArray.push(toSimpleObject(obj[i]));
     }
-    return simpleObj;
+    return simpleArray;
   }
   if (obj instanceof Object) {
     var simpleObj = {};
@@ -47,18 +46,23 @@ function toSimpleObject(obj) {
 
 function toEqualSimplifiedObject(expected) {
   this.actual = toSimpleObject(this.actual);
-  return jasmine.Matchers.prototype.toEqual.call(this, toSimpleObject(expected));
+  return (<any>jasmine).Matchers.prototype.toEqual.call(this, toSimpleObject(expected));
 }
 
 beforeEach(function() {
   this.addMatchers({toEqualSimplifiedObject: toEqualSimplifiedObject});
 });
 
+declare module jasmine {
+  interface Matchers {
+    toEqualSimplifiedObject: typeof toEqualSimplifiedObject;
+  }
+}
 
 describe("PlaceholderRegistry", function() {
   describe("assumptions", function() {
-    expect(true + true).toBe(2);
-    expect(false + false).toBe(0);
+    expect(<any>true + <any>true).toBe(2);
+    expect(<any>false + <any>false).toBe(0);
   });
 
   describe("constructor", function() {
@@ -70,7 +74,7 @@ describe("PlaceholderRegistry", function() {
       registry.updatePlaceholder(new message_types.NgExpr("NAME", "original text", ["ex_01", "ex_02"], "comment"));
       // registry.updatePlaceholder(new message_types.NgExpr(void 0, "original text1", ["ex_03", "ex_02"], "comment"));
       // registry.updatePlaceholder(new message_types.NgExpr(void 0, "original text2", ["ex_04", "ex_02"], "comment"));
-      console.log(JSON.stringify(toSimpleObject(registry.toMap()), 2));
+      console.log(JSON.stringify(toSimpleObject(registry.toMap()), null, 2));
       expect(registry.toMap()).toEqualSimplifiedObject({
           "NAME": {
               name: "NAME",

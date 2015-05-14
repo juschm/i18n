@@ -116,21 +116,7 @@ google3/build_log.txt
 
 
 # This project
-node_modules/
+/node_modules/
 
-# generated from .ts/.es6
-*.js
-*.js.map
-*.d.ts
-# generated for .ts/.es6/.js during implicit dependency analysis (ninja only)
-*.depfile
-
-# Track .js files in our spec/ directory.
-!/spec/**/*.js
-
-# Track definitions in typings/ directories.
-!**/typings/**/*.d.ts
-
-# Third-party sources may have .js/.map files.
-!/web/third_party/**/*.js
-!/web/third_party/**/*.js.map
+# Build output
+/build/
