@@ -18,29 +18,28 @@ cd i18n
 
 # Install pre-requisites.
 # This will ask you for sudo permissions.
-./setup
+./scripts/setup
 ```
 
-## Run a sample extraction
+## Build
 
 ```zsh
-# NOTE:  This uses a hardcoded path and extract from
-#     demo/index.html and prints the results onto the console and not to
-#     a file on disk.
-./tools/extract_messages
+./scripts/build
 ```
 
-## Run a sample pseudo translation
+
+## Run tests
 
 ```zsh
-# NOTE:  This reads from demo/index.html and (over)writes demo/index-zz.html.
-./tools/pseudo_translate
+./scripts/run-tests
 ```
 
-## Running tests
+
+## Run an extraction
 
 ```zsh
-jasmine-node spec/
+# Writes to ./i18nData/messages.json
+./bin/extract_messages
 ```
 
 
